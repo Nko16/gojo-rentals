@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Rentals | Secure Access Portal</title>
+    <!-- Add your font <link> here if using a service like Google Fonts -->
+    <!-- Example:
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    -->
+    <style>
+        :root {
+            /* --- Font Configuration --- */
+            --font-family-primary-name: 'Inter'; /* <<< CHANGE THIS to your font name */
+            --font-family-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-family-primary: var(--font-family-primary-name), var(--font-family-fallback);
+
+            /* --- Colors & Sizes (Keep or Adjust) --- */
+            --brand-primary: #FF385C; --brand-primary-dark: #D90B63; --brand-secondary: #00A699;
+            --text-color-base: #222222; --text-color-secondary: #484848; --text-color-muted: #717171;
+            --text-color-on-brand: #FFFFFF; --surface-background: #FFFFFF; --app-background: #F7F7F7;
+            --border-color-light: #EBEBEB; --border-color-default: #DDDDDD; --border-color-strong: #B0B0B0;
+            --feedback-success-bg: #D4EDDA; --feedback-success-text: #155724;
+            --feedback-error-bg: #F8D7DA; --feedback-error-text: #721C24;
+            --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04); --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+            --input-height-main: 58px; --button-height-main: 50px;
+            --strength-color-0: #E74C3C; --strength-color-1: #E74C3C; --strength-color-2: #F39C12;
+            --strength-color-3: #F1C40F; --strength-color-4: #2ECC71; --strength-color-5: var(--brand-secondary);
+            --strength-color-6: var(--brand-secondary);
+        }
+
+        /* --- Add your @font-face rules here if self-hosting --- */
+
+        /* --- Base & Layout Styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: var(--font-family-primary);
+            background-color: var(--app-background); color: var(--text-color-base); line-height: 1.5;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+        .auth-dialog-container {
+            background-color: var(--surface-background); border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg); width: 100%; max-width: 500px; overflow: hidden;
+            transform: scale(0.95); opacity: 0;
+            animation: dialogAppear 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        @keyframes dialogAppear { to { transform: scale(1); opacity: 1; } }
+        .dialog-header { padding: 24px; border-bottom: 1px solid var(--border-color-light); text-align: center; }
+        .dialog-header .title { font-size: 1.25rem; font-weight: 700; }
+        .dialog-body { padding: 24px 32px 32px; }
+        .brand-info { text-align: center; margin-bottom: 32px; }
+        .brand-info .logo-text { font-size: 2.25rem; font-weight: 900; color: var(--brand-primary); letter-spacing: -0.5px; margin-bottom: 8px; }
+        .brand-info .tagline { font-size: 1rem; color: var(--text-color-secondary); font-weight: 500; }
+        .form-block { display: none; opacity: 0; transition: opacity 0.3s ease-out; }
+        .form-block.active { display: block; opacity: 1; }
+
+        /* --- General Input Styles --- */
+        .input-field-group { margin-bottom: 18px; position: relative; }
+        .input-field-group .label-text {
+            font-size: 0.75rem; font-weight: 500; color: var(--text-color-muted);
+            padding: 0 4px; background-color: var(--surface-background);
+            position: absolute; top: -7px; left: 12px;
+            transition: all 0.2s ease-out; opacity: 0; transform: translateY(5px);
+            pointer-events: none;
+        }
+        .input-field-group .input-control:focus ~ .label-text,
+        .input-field-group .input-control:not(:placeholder-shown) ~ .label-text {
+            opacity: 1; transform: translateY(0);
+        }
+        .input-control {
+            width: 100%; height: var(--input-height-main); padding: 16px; padding-right: 16px;
+            border: 1px solid var(--border-color-default); border-radius: var(--radius-md);
+            font-size: 1rem; font-family: var(--font-family-primary);
+            color: var(--text-color-base); background-color: var(--surface-background);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-control[type="password"] { padding-right: 55px; }
+        .input-control::placeholder { color: var(--text-color-muted); font-weight: 400; opacity: 1; }
+        .input-control:focus { outline: none; border-color: var(--border-color-strong); box-shadow: 0 0 0 1px var(--border-color-strong); }
+        .input-control[aria-invalid="true"] { border-color: var(--brand-primary); box-shadow: 0 0 0 1px var(--brand-primary); }
+        .input-control.valid { border-color: var(--brand-secondary); }
+
+        .password-input-wrapper { position: relative; }
+        .toggle-password-visibility {
+            background: none; border: none; color: var(--text-color-muted);
+            font-size: 0.875rem; font-weight: 700; cursor: pointer;
+            position: absolute; top: 50%; right: 10px; transform: translateY(-50%); padding: 10px;
+        }
+        .toggle-password-visibility:hover, .toggle-password-visibility:focus-visible { color: var(--text-color-base); outline: none; }
+
+        .field-feedback { font-size: 0.8rem; margin-top: 4px; padding-left: 2px; display: none; color: var(--brand-primary); }
+        .input-control[aria-invalid="true"] + .field-feedback,
+        .input-control[aria-invalid="true"] ~ .field-feedback,
+        .password-input-wrapper .input-control[aria-invalid="true"] ~ .field-feedback { display: block; }
+        .input-field-group > .password-input-wrapper + .field-feedback.error { display: none; }
+        #signup-password-field-feedback.error { display: none; }
+        .input-control#signup-password[aria-invalid="true"] ~ #signup-password-field-feedback.error { display: block; }
+
+
+        .password-strength-section { margin-top: 6px; margin-bottom: 12px; }
+        .strength-bar-container { height: 6px; background-color: var(--border-color-light); border-radius: var(--radius-sm); overflow: hidden; }
+        .strength-bar { height: 100%; width: 0%; border-radius: var(--radius-sm); transition: width 0.3s ease, background-color 0.3s ease; }
+        .strength-text-feedback { font-size: 0.75rem; color: var(--text-color-muted); margin-top: 4px; min-height: 1.2em; font-weight: 500; }
+        .strength-bar.strength-0 { background-color: var(--strength-color-0); } .strength-bar.strength-1 { background-color: var(--strength-color-1); }
+        .strength-bar.strength-2 { background-color: var(--strength-color-2); } .strength-bar.strength-3 { background-color: var(--strength-color-3); }
+        .strength-bar.strength-4 { background-color: var(--strength-color-4); } .strength-bar.strength-5 { background-color: var(--strength-color-5); }
+        .strength-bar.strength-6 { background-color: var(--strength-color-6); }
+
+        .action-button {
+            background: var(--brand-primary); color: var(--text-color-on-brand);
+            height: var(--button-height-main); border: none; border-radius: var(--radius-md);
+            font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 16px; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-family-primary);
+        }
+        .action-button:hover { background: var(--brand-primary-dark); }
+        .action-button:active { transform: scale(0.98); }
+        .action-button:focus-visible { outline: 2px solid var(--brand-primary-dark); outline-offset: 2px; }
+
+        .form-switch-prompt { margin-top: 20px; font-size: 0.9rem; text-align: center; color: var(--text-color-base); }
+        .form-switch-prompt .switch-link { color: var(--brand-primary); font-weight: 700; text-decoration: none; }
+        .form-switch-prompt .switch-link:hover, .form-switch-prompt .switch-link:focus-visible { text-decoration: underline; outline: none; }
+
+        .global-message-display {
+            padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500;
+            margin-bottom: 16px; text-align: center; display: none; aria-live: assertive;
+        }
+        .global-message-display.success { background-color: var(--feedback-success-bg); color: var(--feedback-success-text); border: 1px solid var(--brand-secondary); display: block; aria-live: polite; }
+        .global-message-display.error { background-color: var(--feedback-error-bg); color: var(--feedback-error-text); border: 1px solid var(--brand-primary); display: block; aria-live: assertive; }
+
+        .terms-notice { font-size: 0.75rem; color: var(--text-color-muted); text-align: center; margin-top: 16px; line-height: 1.4; }
+        .terms-notice a { color: var(--text-color-secondary); text-decoration: underline; font-weight: 500; }
+        .terms-notice a:focus-visible { outline: 1px dotted var(--text-color-secondary); outline-offset: 2px;}
+
+        .social-login-divider { display: flex; align-items: center; text-align: center; color: var(--text-color-muted); font-size: 0.8rem; font-weight: 500; margin: 24px 0; }
+        .social-login-divider::before, .social-login-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color-light); }
+        .social-login-divider:not(:empty)::before { margin-right: .5em; } .social-login-divider:not(:empty)::after { margin-left: .5em; }
+
+        .social-login-buttons .social-btn {
+            display: flex; align-items: center; justify-content: center; width: 100%; height: 48px;
+            border: 1px solid var(--border-color-default); border-radius: var(--radius-md);
+            background-color: var(--surface-background); color: var(--text-color-base);
+            font-family: var(--font-family-primary); font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; text-decoration: none; margin-bottom: 12px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .social-login-buttons .social-btn:hover { border-color: var(--border-color-strong); background-color: #f9f9f9; }
+        .social-login-buttons .social-btn:focus-visible { border-color: var(--border-color-strong); outline: 1px solid var(--border-color-strong); outline-offset: 1px; }
+        .social-login-buttons .social-btn .icon { width: 20px; height: 20px; margin-right: 10px; display: inline-block; font-weight: bold; font-size: 1.1em; line-height: 1; text-align: center; }
+        .icon-google::before { content: 'G'; color: #DB4437; } .icon-facebook::before { content: 'f'; color: #4267B2; } .icon-apple::before { content: ''; color: #000000; font-size: 1.3em; }
+
+
+        /* --- START: Compact Signup Form Styles --- */
+        #signup-form-block .input-field-group {
+            margin-bottom: 12px; /* Reduced from 18px */
+        }
+        #signup-form-block .field-feedback {
+             margin-top: 3px; /* Reduced from 4px */
+             font-size: 0.75rem; /* Optional: slightly smaller error text */
+        }
+        #signup-form-block .password-strength-section {
+            margin-top: 4px;    /* Reduced from 6px */
+            margin-bottom: 8px; /* Reduced from 12px */
+        }
+         #signup-form-block .strength-bar-container {
+            height: 4px; /* Reduced from 6px */
+        }
+        #signup-form-block .strength-text-feedback {
+            font-size: 0.7rem;  /* Reduced from 0.75rem */
+            margin-top: 3px;     /* Reduced from 4px */
+            min-height: 1.1em;   /* Adjusted min-height */
+        }
+        #signup-form-block .action-button {
+            margin-top: 14px; /* Reduced from 16px */
+            height: 48px;     /* Optional: Reduced from 50px */
+        }
+        #signup-form-block .terms-notice {
+            margin-top: 10px; /* Reduced from 16px */
+            font-size: 0.7rem; /* Reduced from 0.75rem */
+            line-height: 1.3;  /* Reduced from 1.4 */
+        }
+        #signup-form-block .social-login-divider {
+            margin: 16px 0; /* Reduced from 24px 0 */
+            font-size: 0.75rem; /* Optional: smaller text */
+        }
+        #signup-form-block .social-login-buttons .social-btn {
+            height: 44px;        /* Reduced from 48px */
+            margin-bottom: 8px;  /* Reduced from 12px */
+            font-size: 0.85rem;  /* Reduced from 0.9rem */
+        }
+        #signup-form-block .form-switch-prompt {
+            margin-top: 14px; /* Reduced from 20px */
+            font-size: 0.85rem; /* Reduced from 0.9rem */
+        }
+        /* If input height was changed for signup, adjust label/toggle here */
+        /* Example if input height was reduced (uncomment if needed):
+        #signup-form-block .input-control { height: 52px; padding-top: 14px; padding-bottom: 14px; }
+        #signup-form-block .label-text { top: -6px; }
+        */
+        /* --- END: Compact Signup Form Styles --- */
+
+    </style>
+</head>
+<body>
+    <!-- The HTML structure remains the same as the previous version -->
+    <div class="auth-dialog-container">
+        <header class="dialog-header">
+            <h2 class="title" id="auth-dialog-title">Log in or sign up</h2>
+        </header>
+
+        <main class="dialog-body">
+            <div class="brand-info">
+                <div class="logo-text">Gojo Rentals</div>
+                <p class="tagline" id="auth-dialog-tagline">Your key to premium stays.</p>
+            </div>
+
+            <!-- LOGIN FORM (Unaffected by compact styles) -->
+            <div id="login-form-block" class="form-block active">
+                <form id="login-form" novalidate>
+                    <div id="login-global-msg" class="global-message-display" role="alert"></div>
+                    <div class="input-field-group">
+                        <input type="text" id="login-identifier" name="identifier" class="input-control" required placeholder="Email or Username" aria-describedby="login-identifier-error">
+                        <label for="login-identifier" class="label-text">Email or Username</label>
+                        <div id="login-identifier-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <div class="password-input-wrapper">
+                            <input type="password" id="login-password" name="password" class="input-control" required placeholder="Password" aria-describedby="login-password-error">
+                            <label for="login-password" class="label-text">Password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="login-password" aria-label="Show password">Show</button>
+                        </div>
+                        <div id="login-password-error" class="field-feedback error"></div>
+                    </div>
+                    <button type="submit" class="action-button">Continue</button>
+                </form>
+                <div class="social-login-divider">OR</div>
+                <div class="social-login-buttons">
+                     <button type="button" class="social-btn" id="google-login-btn"><span class="icon icon-google"></span>Continue with Google</button>
+                     <button type="button" class="social-btn" id="facebook-login-btn"><span class="icon icon-facebook"></span>Continue with Facebook</button>
+                     <button type="button" class="social-btn" id="apple-login-btn"><span class="icon icon-apple"></span>Continue with Apple</button>
+                </div>
+                <p class="form-switch-prompt">
+                    New to Gojo Rentals? <a href="#" id="switch-to-signup" class="switch-link">Sign up</a>
+                </p>
+            </div>
+
+            <!-- SIGNUP FORM (Affected by compact styles) -->
+            <div id="signup-form-block" class="form-block">
+                <form id="signup-form" novalidate>
+                     <div id="signup-global-msg" class="global-message-display" role="alert"></div>
+                    <div class="input-field-group">
+                        <input type="text" id="signup-username" name="username" class="input-control" required minlength="3" placeholder="Username" aria-describedby="signup-username-error">
+                        <label for="signup-username" class="label-text">Username</label>
+                        <div id="signup-username-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <input type="email" id="signup-email" name="email" class="input-control" required placeholder="Email address" aria-describedby="signup-email-error">
+                        <label for="signup-email" class="label-text">Email address</label>
+                        <div id="signup-email-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <div class="password-input-wrapper">
+                            <input type="password" id="signup-password" name="password" class="input-control" required minlength="8" placeholder="Create password" aria-describedby="signup-password-field-feedback">
+                            <label for="signup-password" class="label-text">Create password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="signup-password" aria-label="Show password">Show</button>
+                        </div>
+                        <div class="password-strength-section">
+                            <div class="strength-bar-container" aria-hidden="true">
+                                <div class="strength-bar" id="password-strength-indicator-bar"></div>
+                            </div>
+                            <div class="strength-text-feedback" id="password-strength-advice" aria-live="polite"></div>
+                        </div>
+                        <div class="field-feedback error" id="signup-password-field-feedback"></div>
+                    </div>
+                    <div class="input-field-group">
+                         <div class="password-input-wrapper">
+                            <input type="password" id="signup-confirm-password" name="confirm_password" class="input-control" required placeholder="Confirm password" aria-describedby="signup-confirm-password-error">
+                            <label for="signup-confirm-password" class="label-text">Confirm password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="signup-confirm-password" aria-label="Show password">Show</button>
+                        </div>
+                        <div id="signup-confirm-password-error" class="field-feedback error"></div>
+                    </div>
+                    <button type="submit" class="action-button">Agree & Continue</button>
+                    <p class="terms-notice">
+                        By selecting Agree & Continue, I agree to Gojo Rentals'
+                        <a href="#">Terms of Service</a>, <a href="#">Payments Terms of Service</a>, and
+                        <a href="#">Nondiscrimination Policy</a> and acknowledge the <a href="#">Privacy Policy</a>.
+                    </p>
+                </form>
+                 <div class="social-login-divider">OR</div>
+                <div class="social-login-buttons">
+                    <button type="button" class="social-btn" id="google-signup-btn"><span class="icon icon-google"></span>Continue with Google</button>
+                    <button type="button" class="social-btn" id="facebook-signup-btn"><span class="icon icon-facebook"></span>Continue with Facebook</button>
+                    <button type="button" class="social-btn" id="apple-signup-btn"><span class="icon icon-apple"></span>Continue with Apple</button>
+                </div>
+                <p class="form-switch-prompt">
+                    Already have an account? <a href="#" id="switch-to-login" class="switch-link">Log in</a>
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- The JavaScript remains the same as the previous version -->
+    <script>
+        // PASTE THE JAVASCRIPT FROM THE PREVIOUS VERSION HERE
+        // (It doesn't need changes for this compactness adjustment)
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Element References ---
+            const loginBlock = document.getElementById('login-form-block');
+            const signupBlock = document.getElementById('signup-form-block');
+            const switchToSignupLink = document.getElementById('switch-to-signup');
+            const switchToLoginLink = document.getElementById('switch-to-login');
+            const dialogTitleEl = document.getElementById('auth-dialog-title');
+            const dialogTaglineEl = document.getElementById('auth-dialog-tagline');
+            const loginFormEl = document.getElementById('login-form');
+            const signupFormEl = document.getElementById('signup-form');
+            const loginGlobalMsgEl = document.getElementById('login-global-msg');
+            const signupGlobalMsgEl = document.getElementById('signup-global-msg');
+            const signupPasswordEl = document.getElementById('signup-password');
+            const strengthBarEl = document.getElementById('password-strength-indicator-bar');
+            const strengthAdviceEl = document.getElementById('password-strength-advice');
+
+            // --- Constants ---
+            const MSG = {
+                REQUIRED: "This field can't be blank.",
+                EMAIL: "Enter a valid email address.",
+                MINLENGTH: (len) => `Enter at least ${len} characters.`,
+                PASSWORD_MISMATCH: "Passwords don't match.",
+                FIX_ERRORS: 'Please fix the errors below.',
+                CHECK_ERRORS: 'Please check the form for errors.',
+                LOGIN_SUCCESS: 'Login successful (Demo)!',
+                SIGNUP_SUCCESS: 'Account created (Demo)! Please log in.',
+                SOCIAL_CONTINUE: (provider) => `Continuing with ${provider}... (Demo)`
+            };
+
+            // --- Utility Functions ---
+            function displayGlobalMessage(el, message, type) {
+                el.textContent = message;
+                el.className = `global-message-display ${type}`; // 'success' or 'error'
+                el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+                el.style.display = 'block';
+            }
+
+            function clearGlobalMessage(el) {
+                el.textContent = '';
+                el.className = 'global-message-display';
+                el.removeAttribute('role');
+                el.style.display = 'none';
+            }
+
+            function setFieldValidity(inputEl, isValid, message = "") {
+                const errorMsgId = inputEl.getAttribute('aria-describedby');
+                const feedbackEl = errorMsgId ? document.getElementById(errorMsgId) : null;
+
+                inputEl.classList.toggle('valid', isValid);
+                inputEl.setAttribute('aria-invalid', String(!isValid)); // Explicitly set "true" or "false"
+
+                if (feedbackEl) {
+                    feedbackEl.textContent = message;
+                }
+            }
+
+            function validateField(inputEl) {
+                let isValid = true;
+                let message = '';
+                const value = inputEl.value.trim();
+
+                // Reset validity message first
+                 setFieldValidity(inputEl, true); // Assume valid initially for this check
+
+
+                if (inputEl.hasAttribute('required') && !value) {
+                    isValid = false; message = MSG.REQUIRED;
+                } else if (inputEl.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    isValid = false; message = MSG.EMAIL;
+                } else if (inputEl.hasAttribute('minlength') && value && value.length < parseInt(inputEl.getAttribute('minlength'))) {
+                    isValid = false; message = MSG.MINLENGTH(inputEl.getAttribute('minlength'));
+                }
+
+                // Handle confirm password specifically
+                if (inputEl.id === 'signup-confirm-password') {
+                    const passwordVal = signupPasswordEl ? signupPasswordEl.value.trim() : '';
+                    if (value && passwordVal && value !== passwordVal) {
+                        isValid = false; message = MSG.PASSWORD_MISMATCH;
+                    } else if (!value && inputEl.hasAttribute('required')) {
+                        isValid = false; message = MSG.REQUIRED;
+                    }
+                }
+
+                 // Only update if there was an error
+                if (!isValid) {
+                    setFieldValidity(inputEl, isValid, message);
+                }
+                return isValid;
+            }
+
+
+            function validateForm(formEl) {
+                let isFormValid = true;
+                formEl.querySelectorAll('.input-control[required], .input-control[type="email"], .input-control[minlength], .input-control[name="confirm_password"]').forEach(input => {
+                    if (!validateField(input)) {
+                        isFormValid = false;
+                    }
+                });
+                return isFormValid;
+            }
+
+            function getPasswordStrengthInfo(password) {
+                let score = 0;
+                const advice = [];
+                const minLength = 8;
+
+                if (!password) return { score: 0, advice: ["Enter a password."], barClassName: 'strength-0'};
+
+                const hasCapital = /[A-Z]/.test(password);
+                const lowerCount = (password.match(/[a-z]/g) || []).length;
+                const hasMinThreeLower = lowerCount >= 3;
+                const hasSign = /[^a-zA-Z0-9]/.test(password);
+                const numberCount = (password.match(/[0-9]/g) || []).length;
+                const hasMinFourNumbers = numberCount >= 4;
+                const meetsMinLength = password.length >= minLength;
+
+                if (hasCapital && hasMinThreeLower && hasSign && hasMinFourNumbers && meetsMinLength) {
+                    return { score: 6, advice: ["Excellent password!"], barClassName: 'strength-6' };
+                }
+
+                if (!meetsMinLength) advice.push(`Use at least ${minLength} characters.`); else score++;
+                if (!hasCapital) advice.push("Add an uppercase letter."); else score++;
+                if (lowerCount === 0) advice.push("Add lowercase letters."); else if (!hasMinThreeLower) advice.push("Add more lowercase letters (at least 3 total)."); else score++;
+                if (numberCount === 0) advice.push("Add numbers."); else if (!hasMinFourNumbers) advice.push("Add more numbers (at least 4 total)."); else score++;
+                if (!hasSign) advice.push("Add a special character (e.g., !@#$)."); else score++;
+                if (password.length >= 12 && score >= 3) score++;
+
+                let finalScore = Math.min(score, 5);
+                let barClassName = `strength-${finalScore}`;
+
+                if (advice.length === 0) {
+                    if (finalScore >= 4) advice.push("Strong password!");
+                    else if (finalScore >= 2) advice.push("Good password!");
+                    else advice.push("Consider more variety.");
+                }
+
+                return { score: finalScore, advice: advice.slice(0, 2), barClassName };
+            }
+
+            function updatePasswordStrengthDisplay(password) {
+                if (!strengthBarEl || !strengthAdviceEl) return; // Safety check
+                const { score, advice, barClassName } = getPasswordStrengthInfo(password);
+                const barWidthPercent = Math.min(100, (score / 6) * 100);
+
+                strengthBarEl.style.width = `${barWidthPercent}%`;
+                strengthBarEl.className = `strength-bar ${barClassName}`;
+                strengthAdviceEl.innerHTML = advice.map(item => `<span>${item}</span>`).join("<br>");
+            }
+
+            function switchAuthMode(showBlock, hideBlock, title, tagline) {
+                dialogTitleEl.textContent = title;
+                dialogTaglineEl.textContent = tagline;
+
+                hideBlock.classList.remove('active');
+
+                [loginFormEl, signupFormEl].forEach(form => {
+                     if (!form) return; // Safety check
+                    form.reset();
+                    form.querySelectorAll('.input-control').forEach(input => {
+                        input.classList.remove('valid');
+                        input.removeAttribute('aria-invalid');
+                        const errorMsgId = input.getAttribute('aria-describedby');
+                        if (errorMsgId) {
+                            const feedbackEl = document.getElementById(errorMsgId);
+                            if (feedbackEl && feedbackEl.classList.contains('field-feedback')) {
+                                feedbackEl.textContent = '';
+                            }
+                        }
+                        input.placeholder = input.dataset.originalPlaceholder || input.placeholder;
+                    });
+                });
+
+                clearGlobalMessage(loginGlobalMsgEl);
+                clearGlobalMessage(signupGlobalMsgEl);
+                if (signupPasswordEl) updatePasswordStrengthDisplay('');
+
+                setTimeout(() => { showBlock.classList.add('active'); }, 50);
+            }
+
+            // --- Event Listeners Setup ---
+            if (switchToSignupLink) {
+                 switchToSignupLink.addEventListener('click', (e) => {
+                     e.preventDefault();
+                     switchAuthMode(signupBlock, loginBlock, 'Create your account', 'Join Gojo Rentals for exclusive access.');
+                 });
+            }
+            if (switchToLoginLink) {
+                 switchToLoginLink.addEventListener('click', (e) => {
+                     e.preventDefault();
+                     switchAuthMode(loginBlock, signupBlock, 'Welcome back!', 'Log in to manage your stays.');
+                 });
+            }
+
+            if (loginFormEl) {
+                loginFormEl.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    clearGlobalMessage(loginGlobalMsgEl);
+                    if (!validateForm(this)) {
+                        displayGlobalMessage(loginGlobalMsgEl, MSG.FIX_ERRORS, 'error');
+                        this.querySelector('[aria-invalid="true"]')?.focus();
+                        return;
+                    }
+                    console.log('DEMO: Login submitted', Object.fromEntries(new FormData(this)));
+                    displayGlobalMessage(loginGlobalMsgEl, MSG.LOGIN_SUCCESS, 'success');
+                });
+            }
+
+             if (signupFormEl) {
+                 signupFormEl.addEventListener('submit', function(e) {
+                     e.preventDefault();
+                     clearGlobalMessage(signupGlobalMsgEl);
+                     if (signupPasswordEl) updatePasswordStrengthDisplay(signupPasswordEl.value); // Update strength on submit too
+
+                     if (!validateForm(this)) {
+                         displayGlobalMessage(signupGlobalMsgEl, MSG.CHECK_ERRORS, 'error');
+                         this.querySelector('[aria-invalid="true"]')?.focus();
+                         return;
+                     }
+                     console.log('DEMO: Signup submitted', Object.fromEntries(new FormData(this)));
+                     displayGlobalMessage(signupGlobalMsgEl, MSG.SIGNUP_SUCCESS, 'success');
+                 });
+            }
+
+            document.querySelectorAll('.input-control').forEach(input => {
+                input.dataset.originalPlaceholder = input.placeholder;
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => {
+                     // Clear error visuals optimistically
+                    if (input.getAttribute('aria-invalid') === 'true') {
+                        setFieldValidity(input, true); // Mark as valid visually
+                        input.classList.remove('valid'); // Remove green tick during typing
+                    }
+                     // If confirm password has a mismatch error, clear it if the main password OR confirm password changes
+                     if (input.id === 'signup-password' || input.id === 'signup-confirm-password') {
+                         const confirmPwEl = document.getElementById('signup-confirm-password');
+                         const confirmErrorEl = document.getElementById('signup-confirm-password-error');
+                         if (confirmErrorEl && confirmErrorEl.textContent === MSG.PASSWORD_MISMATCH) {
+                            if (confirmPwEl) setFieldValidity(confirmPwEl, true);
+                         }
+                     }
+                });
+            });
+
+            if (signupPasswordEl) {
+                signupPasswordEl.addEventListener('input', () => {
+                     updatePasswordStrengthDisplay(signupPasswordEl.value);
+                     validateField(signupPasswordEl); // Re-check length/required
+                });
+            }
+
+            const confirmPasswordInput = document.getElementById('signup-confirm-password');
+            if (confirmPasswordInput) {
+                confirmPasswordInput.addEventListener('input', () => {
+                    validateField(confirmPasswordInput); // Validate confirm on its own input too
+                });
+            }
+
+            document.querySelectorAll('.toggle-password-visibility').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetEl = document.getElementById(this.dataset.target);
+                    if (!targetEl) return;
+                    const isPassword = targetEl.type === 'password';
+                    targetEl.type = isPassword ? 'text' : 'password';
+                    this.textContent = isPassword ? 'Hide' : 'Show';
+                    this.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                });
+            });
+
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const provider = btn.textContent.trim().split('Continue with ')[1] || 'Social Provider';
+                    console.log(`DEMO: ${provider} clicked.`);
+                    const formBlock = btn.closest('.form-block');
+                    const globalMsgEl = formBlock && formBlock.id.includes('login') ? loginGlobalMsgEl : signupGlobalMsgEl;
+                    clearGlobalMessage(loginGlobalMsgEl);
+                    clearGlobalMessage(signupGlobalMsgEl);
+                    if(globalMsgEl) displayGlobalMessage(globalMsgEl, MSG.SOCIAL_CONTINUE(provider), 'success');
+                });
+            });
+
+            // --- Initial State ---
+            if (loginBlock && signupBlock) { // Check elements exist before calling
+                switchAuthMode(loginBlock, signupBlock, 'Welcome to Gojo Rentals', 'Your key to premium stays.');
+            } else {
+                console.error("Could not find login or signup blocks for initial setup.");
+            }
+
+
+            document.querySelectorAll('.input-control:not([placeholder]), .input-control[placeholder=""]').forEach(el => {
+                if (!el.placeholder || el.placeholder === "") {
+                    el.placeholder = ' ';
+                    el.dataset.originalPlaceholder = ' ';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

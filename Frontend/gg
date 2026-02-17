@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Rentals Logo</title>
+    <style>
+        /* Logo Container */
+        .logo {
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+        }
+        
+        /* SVG Logo */
+        .logo-svg {
+            width: 50px;
+            height: 50px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        /* Text */
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+            text-align: center;
+        }
+        
+        .logo-text span {
+            color: #FF385C;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="#" class="logo">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- House Roof -->
+            <polygon points="50,15 15,40 15,70 50,95 85,70 85,40" fill="#FF385C"/>
+            <!-- Door -->
+            <rect x="40" y="55" width="20" height="30" fill="white" rx="2"/>
+            <!-- Letter G -->
+            <path d="M55 50a15 15 0 1 1-20 0 15 15 0 0 1 20 0z" fill="none" stroke="white" stroke-width="5"/>
+            <path d="M50 35v15h10" fill="none" stroke="white" stroke-width="5"/>
+        </svg>
+        <div class="logo-text">GOJO <span>RENTALS</span></div>
+    </a>
+</body>
+</html>

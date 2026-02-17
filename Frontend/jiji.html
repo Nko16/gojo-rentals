@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraMarkt - The Future of Marketplaces</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. CSS VARIABLES & GLOBAL STYLES
+           ========================================================================== */
+        :root {
+            --bg-color: #daae1f;
+            --surface-color: #e6bd39;
+            --primary-color: #bb86fc;
+            --secondary-color: #03dac6;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 50px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ==========================================================================
+           2. HEADER & NAVIGATION
+           ========================================================================== */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .logo span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-actions .btn {
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            background: var(--gradient);
+            color: #000;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-actions .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ==========================================================================
+           3. HERO SECTION
+           ========================================================================== */
+        .hero {
+            padding: 100px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            flex: 1;
+            padding-right: 40px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        
+        .hero h1 span {
+             background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .hero-search {
+            display: flex;
+            max-width: 500px;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 50px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
+        }
+        
+        .hero-search input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .hero-search button {
+            border: none;
+            border-radius: 50px;
+            background: var(--gradient);
+            color: #000;
+            font-weight: 600;
+            padding: 10px 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .hero-search button:hover {
+             transform: scale(1.05);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 20px;
+        }
+
+        /* ==========================================================================
+           4. CATEGORIES SECTION
+           ========================================================================== */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+        }
+        
+        .category-item {
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-item:hover {
+            transform: translateY(-8px);
+            background: linear-gradient(145deg, rgba(187, 134, 252, 0.1), rgba(3, 218, 198, 0.1));
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            color: var(--primary-color);
+        }
+
+        .category-item h3 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* ==========================================================================
+           5. FEATURED PRODUCTS SECTION
+           ========================================================================== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        /* This ::before is for the glowing border effect on hover */
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            padding: 2px;
+            background: var(--gradient);
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+        
+        .product-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .product-card .btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: #000;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .product-card .btn:hover {
+            background: var(--secondary-color);
+        }
+
+        /* ==========================================================================
+           6. SELLER CTA SECTION
+           ========================================================================== */
+        .seller-cta {
+            background-image: var(--gradient);
+            color: #000;
+            text-align: center;
+            border-radius: 20px;
+            padding: 60px;
+        }
+        
+        .seller-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .seller-cta p {
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .seller-cta .btn {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .seller-cta .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* ==========================================================================
+           7. FOOTER
+           ========================================================================== */
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 50px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-col h4 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+        
+        .footer-col a:hover {
+            color: var(--primary-color);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        /* ==========================================================================
+           8. RESPONSIVE DESIGN
+           ========================================================================== */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 40px;
+            }
+            .hero-search {
+                margin: 0 auto;
+            }
+            .nav-links {
+                display: none; /* In a real site, implement a hamburger menu */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2.2rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <nav class="container navbar">
+            <a href="#" class="logo">Aura<span>Markt</span></a>
+            <ul class="nav-links">
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#">Hot Deals</a></li>
+                <li><a href="#">How it Works</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#" class="btn">Become a Seller</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero container">
+            <div class="hero-content">
+                <h1>Discover & Shop <span>Unique</span> Goods</h1>
+                <p>The ultimate marketplace for creators, collectors, and curators. Find what you love, or start selling in minutes.</p>
+                <div class="hero-search">
+                    <input type="text" placeholder="Search for anything...">
+                    <button>Search</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDR8fGFic3RyYWN0JTIwZ3JhZGllbnR8ZW58MHx8fHwxNzAwMjcyOTUwfDA&ixlib=rb-4.0.3&q=80&w=1080" alt="Abstract gradient sphere">
+            </div>
+        </section>
+
+        <section id="categories" class="container">
+            <h2 class="section-title">Explore by Category</h2>
+            <div class="categories-grid">
+                <div class="category-item">
+                    <svg class="category-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    <h3>Digital Art</h3>
+                </div>
+                <div class="category-item">
+                     <svg class="category-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                    <h3>Electronics</h3>
+                </div>
+                <div class="category-item">
+                    <svg class="category-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <h3>Handmade Crafts</h3>
+                </div>
+                <div class="category-item">
+                    <svg class="category-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.5 21a8.003 8.003 0 008.157-8.157" /></svg>
+                    <h3>Fashion</h3>
+                </div>
+                <div class="category-item">
+                    <svg class="category-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    <h3>Collectibles</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="container">
+            <h2 class="section-title">Trending Now</h2>
+            <div class="products-grid">
+                <!-- Product Card 1 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/600x400/1e1e1e/bb86fc?text=Product+A" alt="Product Image">
+                    <div class="product-info">
+                        <h3>Cyberpunk VR Headset</h3>
+                        <p class="product-price">$399.99</p>
+                        <a href="#" class="btn">View Details</a>
+                    </div>
+                </div>
+                <!-- Product Card 2 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/600x400/1e1e1e/03dac6?text=Product+B" alt="Product Image">
+                    <div class="product-info">
+                        <h3>Handcrafted Leather Journal</h3>
+                        <p class="product-price">$75.00</p>
+                        <a href="#" class="btn">View Details</a>
+                    </div>
+                </div>
+                <!-- Product Card 3 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/600x400/1e1e1e/bb86fc?text=Product+C" alt="Product Image">
+                    <div class="product-info">
+                        <h3>Minimalist Desk Lamp</h3>
+                        <p class="product-price">$120.00</p>
+                        <a href="#" class="btn">View Details</a>
+                    </div>
+                </div>
+                <!-- Product Card 4 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/600x400/1e1e1e/03dac6?text=Product+D" alt="Product Image">
+                    <div class="product-info">
+                        <h3>Limited Edition Art Print</h3>
+                        <p class="product-price">$250.00</p>
+                        <a href="#" class="btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seller-cta" class="container">
+            <div class="seller-cta">
+                <h2>Ready to Start Selling?</h2>
+                <p>Join thousands of successful creators and entrepreneurs on AuraMarkt. It's free and easy to set up your shop.</p>
+                <a href="#" class="btn">Open Your Shop</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h4>Aura<span>Markt</span></h4>
+                <p>The marketplace for what's next.</p>
+            </div>
+            <div class="footer-col">
+                <h4>For Buyers</h4>
+                <ul>
+                    <li><a href="#">How to Buy</a></li>
+                    <li><a href="#">Buyer Protection</a></li>
+                    <li><a href="#">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>For Sellers</h4>
+                <ul>
+                    <li><a href="#">Start Selling</a></li>
+                    <li><a href="#">Seller Handbook</a></li>
+                    <li><a href="#">Fees & Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 AuraMarkt. Designed to Inspire.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,1742 @@
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book luxury rentals in Addis Ababa - Apartments, Villas, Guesthouses">
+    <title>Gojo Rentals - Premium Rentals in Ethiopia</title>
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style">
+    <link rel="preload" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" as="style">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+
+    <!-- Inline Critical CSS -->
+    <style>
+        :root {
+            --accent-color: #FF385C;
+            --primary-background: #F7F7F7;
+            --white: #FFFFFF;
+            --text-color: #222222;
+            --text-light: #717171;
+            --header-background: #FFFFFF;
+            --highlight-color: #E61E4D; /* Slightly darker accent for hover */
+            --border-color: #EBEBEB;
+            --transition-speed: 0.3s;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+            --radius-full: 50px;
+            --input-background: #FFFFFF;
+            --input-border: #CCCCCC;
+            --input-focus-border: var(--accent-color);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-background);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Header styles */
+        header {
+            background-color: var(--header-background);
+            padding: 10px 40px;
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-speed);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Make Logo Clickable */
+        #logoHomeLink {
+            text-decoration: none;
+            color: inherit; /* Inherit color from parent */
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin: 0;
+            cursor: pointer; /* Indicate it's clickable */
+        }
+
+        /* Main navigation */
+        header nav {
+            display: flex;
+             flex-grow: 1;
+             justify-content: center;
+        }
+
+        header nav a {
+            margin: 0 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color var(--transition-speed);
+            padding: 8px 0;
+            position: relative;
+             white-space: nowrap;
+        }
+
+        header nav a:hover {
+            color: var(--accent-color);
+        }
+
+        header nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width var(--transition-speed);
+        }
+
+        header nav a:hover::after {
+            width: 100%;
+        }
+
+        header .buttons {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 8px;
+        }
+
+
+        /* Language switcher */
+        .language-switcher {
+            position: relative;
+            /* margin-right: 15px; -> replaced by gap */
+        }
+
+        .language-btn {
+            background: none;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            transition: background var(--transition-speed);
+        }
+
+        .language-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+         .language-btn:focus { border-color: var(--accent-color); }
+
+        .language-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background: var(--header-background);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+            min-width: 120px;
+            display: none;
+            z-index: 100;
+             border: 1px solid var(--border-color);
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background var(--transition-speed);
+             font-size: 0.9rem;
+        }
+
+        .language-option:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        /* Auth Buttons & Profile Icon */
+        header button.auth-btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 500;
+            /* margin-left: 8px; -> replaced by gap */
+            font-size: 0.9rem;
+            transition: all var(--transition-speed);
+            min-width: 80px;
+            white-space: nowrap;
+        }
+        header button.auth-btn:hover {
+            background: var(--highlight-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        .profile-icon {
+            display: none; /* Initially hidden */
+            background-color: var(--primary-background);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            padding: 0;
+        }
+        .profile-icon:hover { background-color: var(--border-color); box-shadow: var(--shadow-sm); }
+        .profile-icon:focus { outline: 2px solid var(--accent-color); outline-offset: 2px; border-radius: 50%; }
+        .profile-icon.show { display: flex; }
+        #userName { display: none; }
+
+
+        /* Hero section */
+        .hero {
+            background-color: var(--primary-background);
+            padding: 160px 0 80px;
+            text-align: center;
+            color: var(--text-color);
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05)); z-index: 1; }
+        .hero .container { position: relative; z-index: 2; }
+        .hero h2 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .hero p { font-size: 1.2rem; font-weight: 300; margin-bottom: 20px; max-width: 700px; margin-left: auto; margin-right: auto; color: var(--text-light); }
+
+        /* Search bar */
+        .search-container { display: flex; justify-content: center; margin-top: 30px; }
+        .search-bar { display: flex; background-color: var(--white); padding: 10px; border-radius: var(--radius-full); box-shadow: var(--shadow-lg); width: 90%; max-width: 850px; transition: all var(--transition-speed); border: 1px solid var(--border-color); }
+        .search-bar:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .search-bar .location-input-wrapper { /* Wrapper for input and clear button */
+            position: relative;
+            flex: 3; /* Maintain flex proportion */
+            display: flex; /* Use flex for internal alignment if needed */
+            border-right: 1px solid var(--border-color);
+        }
+        .search-bar input, .search-bar select { padding: 12px 15px; font-size: 0.95rem; border: none; background: transparent; outline: none; font-family: 'Poppins', sans-serif; color: var(--text-color); box-sizing: border-box; }
+        .search-bar input#locationInput {
+            flex-grow: 1; /* Allow input to take available space */
+            padding-right: 35px; /* Make space for the clear button */
+             border-right: none; /* Remove duplicate border */
+        }
+        #clearSearchBtn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            display: none; /* Hidden by default */
+            line-height: 1;
+        }
+        #clearSearchBtn:hover { color: var(--text-color); }
+
+        .search-bar input::placeholder { color: var(--text-light); }
+        .search-bar select { flex: 1; border-right: 1px solid var(--border-color); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5' viewBox='0 0 10 5'%3E%3Cpath fill='%23717171' d='M0 0l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; color: var(--text-light); }
+        .search-bar select:focus, .search-bar select:valid { color: var(--text-color); }
+        .search-bar select:last-of-type { border-right: none; }
+        .search-bar button#searchBtn { background: var(--accent-color); color: white; padding: 10px 25px; border-radius: var(--radius-full); cursor: pointer; font-weight: bold; transition: all var(--transition-speed); min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem; border: none; position: relative; overflow: hidden; }
+        .search-bar button#searchBtn i { font-size: 1rem; transition: opacity 0.2s; }
+        .search-bar button#searchBtn span { transition: opacity 0.2s; }
+        .search-bar button#searchBtn:hover { background: var(--highlight-color); transform: scale(1.02); }
+         /* Search Button Loading State */
+         .search-bar button#searchBtn.loading::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            top: 50%;
+            left: 50%;
+            margin-top: -9px;
+            margin-left: -9px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin-button 0.8s linear infinite;
+        }
+         .search-bar button#searchBtn.loading span,
+         .search-bar button#searchBtn.loading i {
+            opacity: 0; /* Hide text and icon */
+        }
+         @keyframes spin-button { to { transform: rotate(360deg); } }
+
+        /* Listings Section */
+        .listings-section { padding: 60px 0; opacity: 1; transition: opacity var(--transition-speed); }
+        .listings-section.fade-out { opacity: 0; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 40px; gap: 20px; flex-wrap: wrap; }
+        .section-title { font-size: 1.8rem; font-weight: 600; margin: 0; }
+        /* Sorting Dropdown Styles */
+        .sort-controls { display: flex; align-items: center; gap: 10px; }
+        .sort-controls label { font-size: 0.9rem; font-weight: 500; color: var(--text-light); }
+        #sortOptions {
+            padding: 6px 10px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .view-toggle { display: flex; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; margin-left: auto; /* Push toggle right */ }
+        .view-option { padding: 5px 10px; cursor: pointer; background: none; border: none; transition: all var(--transition-speed); color: var(--text-light); }
+        .view-option:hover { background: rgba(0,0,0,0.05); }
+        .view-option.active { background: var(--accent-color); color: white; }
+        /* Grid/List View Styles */
+        #listingsGrid { display: grid; gap: 24px; padding: 0 40px; transition: grid-template-columns 0.3s ease; /* Add transition */ }
+        #listingsGrid.listings-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        #listingsGrid.listings-list { grid-template-columns: 1fr; }
+        #listingsGrid.listings-list .listing-card { flex-direction: row; height: auto; min-height: 150px; }
+        #listingsGrid.listings-list .listing-image-container { height: 150px; width: 200px; flex-shrink: 0; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+        #listingsGrid.listings-list .listing-details { justify-content: center; }
+        #listingsGrid.listings-list .listing-price { margin-top: 10px; }
+
+        /* Loading skeletons */
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-md); }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-card { height: 420px; width: 100%; }
+        .skeleton-image { height: 300px; width: 100%; margin-bottom: 20px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+        .skeleton-details { padding: 0 20px 20px; }
+        .skeleton-text { height: 15px; width: 80%; margin-bottom: 10px; border-radius: var(--radius-sm); }
+        .skeleton-text.short { width: 50%; }
+
+        /* Listing card */
+        .listing-card { border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; background: var(--white); box-shadow: var(--shadow-sm); position: relative; width: 100%; height: 420px; display: flex; flex-direction: column; }
+        .listing-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+        .listing-image-container { position: relative; height: 300px; width: 100%; flex-shrink: 0; }
+        .listing-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .listing-badge { position: absolute; top: 15px; left: 15px; background: var(--accent-color); color: white; padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; z-index: 1; }
+        .like-button { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.4); border: none; cursor: pointer; color: white; font-size: 18px; text-shadow: 0 0 3px rgba(0,0,0,0.5); transition: transform 0.2s, color 0.2s, background 0.2s; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; z-index: 1; }
+        .like-button:hover { transform: scale(1.1); }
+        .like-button.liked { color: var(--accent-color); background: rgba(255, 255, 255, 0.8); animation: heartBeat 0.5s; }
+        .like-button.liked i { color: var(--accent-color); }
+        @keyframes heartBeat { 0% { transform: scale(1); } 25% { transform: scale(1.2); } 50% { transform: scale(0.95); } 75% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .listing-details { padding: 15px 20px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .listing-location { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-light); }
+        .listing-rating { display: flex; align-items: center; font-weight: 500; color: var(--text-color); }
+        .listing-rating svg { width: 14px; height: 14px; fill: var(--accent-color); margin-right: 4px; }
+        .listing-title { font-weight: 500; margin: 5px 0 8px; font-size: 1.05rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 2.6em; color: var(--text-color); }
+        .listing-price { font-weight: 600; color: var(--text-color); font-size: 1rem; margin-top: auto; }
+        .listing-price span { font-weight: 400; color: var(--text-light); }
+
+        /* Property Detail View */
+        .property-detail { display: none; padding: 80px 0 60px; margin-top: 60px; opacity: 0; transition: opacity var(--transition-speed); }
+        .property-detail.fade-in { opacity: 1; }
+        .property-container { display: flex; gap: 40px; }
+        .property-images { flex: 2; position: relative; display: flex; flex-direction: column; }
+        .gallery-main { width: 100%; height: 500px; border-radius: var(--radius-lg); margin-bottom: 20px; box-shadow: var(--shadow-md); overflow: hidden; position: relative; }
+        .gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .gallery-main:hover img { transform: scale(1.02); }
+        .gallery-thumbnails { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .thumbnail { height: 100px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: all var(--transition-speed); border: 2px solid transparent; }
+        .thumbnail.active { border-color: var(--accent-color); box-shadow: var(--shadow-sm); }
+        .thumbnail:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .property-image-rating { position: absolute; bottom: 30px; left: 20px; background: rgba(0, 0, 0, 0.7); color: white; padding: 8px 12px; border-radius: var(--radius-full); display: flex; align-items: center; z-index: 1; }
+        .property-image-rating svg { width: 16px; height: 16px; fill: #FFD700; margin-right: 4px; }
+        .property-image-rating span { font-size: 0.9rem; }
+
+        /* Map Container (Moved under images) */
+        .property-images .map-container { height: 350px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); width: 100%; margin-top: 10px; }
+        .property-images .map-container h3 { font-size: 1.2rem; font-weight: 600; margin: 15px 0 10px; padding-left: 5px; } /* Added padding */
+        .property-images #propertyMap { height: calc(100% - 45px); width: 100%; }
+
+        .property-info { flex: 1; }
+        .property-header { border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px; }
+        .property-title { font-size: 2rem; font-weight: 600; margin: 0 0 10px; line-height: 1.3; }
+        .property-location { display: flex; align-items: center; margin-bottom: 10px; color: var(--text-light); font-size: 1rem; }
+        .property-location i { margin-right: 8px; color: var(--accent-color); }
+        .property-rating { display: flex; align-items: center; }
+        .property-rating svg { width: 16px; height: 16px; fill: var(--accent-color); margin-right: 4px; }
+        .property-rating span { font-weight: 500; color: var(--text-color); }
+        .property-owner { display: flex; align-items: center; margin-bottom: 30px; padding: 20px; background: var(--primary-background); border-radius: var(--radius-lg); border: 1px solid var(--border-color); }
+        .owner-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px; }
+        .owner-info h4 { margin: 0 0 5px; font-weight: 600; }
+        .owner-info p { margin: 0; color: var(--text-light); font-size: 0.9rem; }
+        .property-description { line-height: 1.7; margin-bottom: 30px; color: var(--text-color); }
+        .property-info h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 15px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .property-features { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .feature { background: var(--primary-background); padding: 8px 15px; border-radius: var(--radius-full); font-size: 0.9rem; display: flex; align-items: center; border: 1px solid var(--border-color); }
+        .feature i { margin-right: 8px; color: var(--accent-color); font-size: 1rem; width: 18px; text-align: center; }
+        .feature.show-all-features { cursor: pointer; background: var(--white); font-weight: 500; }
+
+        /* Reservation Box */
+        .reserve-box { border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-md); background: var(--white); position: sticky; top: 80px; }
+        .reserve-header { font-weight: 600; margin-bottom: 20px; font-size: 1.2rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .property-price { font-size: 1.5rem; font-weight: 600; color: var(--text-color); margin-bottom: 20px; text-align: center; }
+        .property-price span { font-weight: 400; font-size: 1rem; color: var(--text-light); }
+        .reserve-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .date-input-group, .guest-input-group { margin-bottom: 15px; }
+        .date-input-group label, .guest-input-group label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 5px; color: var(--text-light); text-transform: uppercase; }
+        .date-input, .reserve-guests { width: 100%; padding: 12px; border: 1px solid var(--input-border); border-radius: var(--radius-md); font-family: 'Poppins', sans-serif; font-size: 0.9rem; background: var(--input-background); color: var(--text-color); box-sizing: border-box; transition: border-color var(--transition-speed); }
+        .date-input:focus, .reserve-guests:focus { border-color: var(--input-focus-border); outline: none; }
+        .reserve-price-details { margin: 20px 0; font-size: 0.95rem; color: var(--text-color); }
+        .reserve-price-details div { display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
+        .reserve-price-details div:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .reserve-price-details .price-label { color: var(--text-light); }
+        .reserve-price-details .price-value { font-weight: 500; }
+        .reserve-total { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 600; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
+        .reserve-btn { background: var(--accent-color); color: white; width: 100%; padding: 15px; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all var(--transition-speed); position: relative; overflow: hidden; margin-top: 20px; }
+        .reserve-btn:hover:not(:disabled) { background: var(--highlight-color); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .reserve-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .reserve-btn.reserved { background: #4CAF50; cursor: default; }
+        .reserve-btn.reserved:hover { background: #4CAF50; transform: none; box-shadow: none; }
+        .reserve-btn.loading::after { content: ""; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin-top: -10px; margin-left: -10px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .reserve-btn.loading span { visibility: hidden; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Back button */
+        .back-btn { background: none; border: 1px solid var(--border-color); color: var(--text-color); font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; margin-bottom: 20px; transition: all var(--transition-speed); padding: 8px 15px; border-radius: var(--radius-full); font-size: 0.9rem; }
+        .back-btn:hover { background-color: var(--primary-background); color: var(--text-color); /* Keep text black */ border-color: var(--text-color); transform: none; }
+        .back-btn svg { width: 18px; height: 18px; margin-right: 8px; fill: currentColor; }
+
+        /* Property Extra Details Section (Reviews, Rating) */
+        .property-extra-details { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+        .property-extra-details h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 20px; }
+
+        /* Rating System */
+        .rating-container { margin: 30px 0; padding: 20px 0; border-top: 1px solid var(--border-color); }
+        .rating-title { font-weight: 600; margin-bottom: 15px; font-size: 1.1rem; }
+        .stars { display: flex; gap: 8px; }
+        .star { font-size: 28px; color: #ddd; cursor: pointer; transition: color 0.2s, transform 0.2s; background: none; border: none; padding: 0; }
+        .star:hover { color: #FFED8A; transform: scale(1.1); }
+        .star.active { color: #FFD700; }
+        .star:focus { outline: 2px solid var(--accent-color); outline-offset: 2px; border-radius: 50%; }
+        .star i { display: block; }
+
+        /* Reviews section */
+        .reviews-section { margin: 40px 0; border-top: 1px solid var(--border-color); padding-top: 30px; }
+        .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .add-review-btn { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 15px; border-radius: var(--radius-full); cursor: pointer; font-weight: 500; transition: all var(--transition-speed); }
+        .add-review-btn:hover { background: var(--accent-color); color: white; }
+        .review-card { background: var(--white); padding: 20px; border-radius: var(--radius-md); margin-bottom: 15px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+        .review-header { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+        .review-header > div:first-of-type { flex-grow: 1; }
+        .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color); }
+        .review-author { font-weight: 500; }
+        .review-date { color: var(--text-light); font-size: 0.8rem; }
+        .review-rating { color: var(--accent-color); font-size: 0.9rem; flex-shrink: 0; margin-left: auto; }
+        .review-content { line-height: 1.6; color: var(--text-color); font-size: 0.95rem; margin-top: 5px; }
+
+        /* Contact Section */
+        .contact-section { display: none; padding: 80px 0; text-align: center; margin-top: 60px; }
+        .contact-section h2 { font-size: 2rem; font-weight: 600; margin-bottom: 15px; }
+        .contact-section p { color: var(--text-light); font-size: 1.1rem; margin-bottom: 40px; }
+        .contact-info { background: var(--white); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left; border: 1px solid var(--border-color); }
+        .contact-item { display: flex; align-items: center; margin: 20px 0; font-size: 1rem; }
+        .contact-item i { margin-right: 15px; color: var(--accent-color); font-size: 1.4rem; width: 25px; text-align: center; }
+        .contact-item span { color: var(--text-color); }
+        .contact-item a { color: var(--text-color); text-decoration: none; }
+        .contact-item a:hover { color: var(--accent-color); text-decoration: underline; }
+
+        /* Lightbox */
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .lightbox-content { position: relative; max-width: 90%; max-height: 90%; display: flex; justify-content: center; align-items: center; }
+        .lightbox-img { max-width: 100%; max-height: calc(90vh - 80px); display: block; border-radius: var(--radius-md); }
+        .lightbox-close { position: absolute; top: -45px; right: -10px; color: white; font-size: 2.5rem; cursor: pointer; line-height: 1; background: rgba(0,0,0,0.3); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .lightbox-nav { position: absolute; top: 50%; width: calc(100% + 80px); left: -40px; display: flex; justify-content: space-between; transform: translateY(-50%); pointer-events: none; }
+        .lightbox-btn { background: rgba(0,0,0,0.5); color: white; border: none; font-size: 2rem; padding: 15px; cursor: pointer; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; pointer-events: all; transition: background 0.2s; }
+        .lightbox-btn:hover { background: rgba(0,0,0,0.8); }
+
+        /* Modal styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; opacity: 0; transition: opacity 0.3s ease; }
+        .modal.show { display: flex; opacity: 1; }
+        .modal-content { background-color: var(--white); padding: 30px 40px; border-radius: var(--radius-lg); width: 90%; max-width: 450px; position: relative; color: var(--text-color); box-shadow: var(--shadow-lg); transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal.show .modal-content { transform: scale(1); }
+        .close-btn { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 1.8rem; background: none; border: none; color: var(--text-light); line-height: 1; padding: 5px; transition: color 0.2s; }
+        .close-btn:hover { color: var(--text-color); }
+
+        /* Realistic Form Styles within Modal */
+        #modalContent h2 { text-align: center; margin-top: 0; margin-bottom: 25px; font-weight: 600; font-size: 1.6rem; color: var(--text-color); }
+        #modalContent form { display: flex; flex-direction: column; gap: 18px; }
+        #modalContent .form-group { display: flex; flex-direction: column; }
+        #modalContent label { margin-bottom: 6px; font-weight: 500; font-size: 0.9rem; color: var(--text-light); }
+        #modalContent input[type="text"], #modalContent input[type="email"], #modalContent input[type="password"] { padding: 12px 15px; border: 1px solid var(--input-border); border-radius: var(--radius-md); font-size: 1rem; font-family: 'Poppins', sans-serif; background-color: var(--input-background); transition: border-color 0.2s, box-shadow 0.2s; }
+        #modalContent input[type="text"]:focus, #modalContent input[type="email"]:focus, #modalContent input[type="password"]:focus { border-color: var(--input-focus-border); box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.15); outline: none; }
+        #modalContent input::placeholder { color: #B0B0B0; }
+        #modalContent button[type="submit"] { background: var(--accent-color); color: white; padding: 14px; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: background-color 0.2s, transform 0.1s; margin-top: 10px; }
+        #modalContent button[type="submit"]:hover { background: var(--highlight-color); transform: translateY(-1px); }
+        #modalContent button[type="submit"]:active { transform: translateY(0px); }
+        #modalContent .modal-message { text-align: center; margin-top: 15px; font-size: 0.9rem; min-height: 1.2em; }
+         #modalContent .modal-message.success { color: var(--password-strong); }
+         #modalContent .modal-message.error { color: var(--password-weak); }
+
+        /* Password Strength Feedback */
+        .password-strength-feedback { font-size: 0.8rem; margin-top: 5px; height: auto; min-height: 1em; transition: color 0.3s ease; }
+        .password-strength-feedback.weak { color: var(--password-weak); }
+        .password-strength-feedback.medium { color: var(--password-medium); }
+        .password-strength-feedback.strong { color: var(--password-strong); }
+        .password-requirements { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; line-height: 1.4; }
+        .password-requirements span { display: block; transition: color 0.3s ease; }
+        .password-requirements span.met { color: var(--password-strong); }
+        .password-requirements span.unmet { color: var(--password-weak); }
+
+        /* Loading animation */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; transition: opacity 0.3s ease; opacity: 0; }
+        .loading-overlay.show { display: flex; opacity: 1; }
+        .loading-spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--accent-color); border-radius: 50%; animation: spin-overlay 1s linear infinite; }
+        @keyframes spin-overlay { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Accessibility & Focus */
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        a:focus, button:focus, input:focus, select:focus, .star:focus, [tabindex="0"]:focus { outline: 2px solid var(--accent-color); outline-offset: 2px; border-radius: var(--radius-sm); }
+        .like-button:focus, .close-btn:focus, .lightbox-btn:focus, .profile-icon:focus { border-radius: 50%; }
+        .reserve-btn:focus { border-radius: var(--radius-md); }
+
+        /* Responsive styles */
+        @media (max-width: 1400px) {
+            #listingsGrid.listings-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+            .property-container { flex-direction: column; }
+            .property-info { margin-top: 30px; }
+            .reserve-box { position: static; }
+            .gallery-main { height: 450px; }
+             .property-images .map-container { height: 300px; }
+        }
+        @media (max-width: 1100px) {
+             header nav { display: none; }
+             #listingsGrid.listings-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+             .hero h2 { font-size: 2.2rem; }
+             .hero p { font-size: 1.1rem; }
+        }
+        @media (max-width: 800px) {
+             header { padding: 10px 20px; }
+             header .container { gap: 10px; }
+             header h1 { font-size: 1.6rem; }
+             header .buttons { gap: 5px; }
+             header button.auth-btn, .language-btn, .profile-icon { padding: 6px 10px; font-size: 0.85rem; min-width: 0; }
+             .profile-icon { width: 32px; height: 32px; font-size: 0.9rem; }
+
+             .section-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 15px; } /* Stack header elements */
+              .sort-controls { width: 100%; justify-content: space-between; } /* Make sort take full width */
+              .view-toggle { margin-left: 0; /* Remove margin */ }
+
+             #listingsGrid { padding: 0 20px; }
+             .hero { padding: 140px 20px 60px; margin-top: 58px; }
+             .listings-section, .property-detail, .contact-section { padding: 40px 0; }
+             .container { padding: 0 20px; }
+
+            .search-bar { flex-direction: column; border-radius: var(--radius-lg); padding: 15px; gap: 10px; width: 100%; max-width: 500px; margin: 30px auto 0; }
+            .search-bar .location-input-wrapper { border-right: none; } /* Remove border in stacked view */
+            .search-bar input, .search-bar select { border-right: none; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; width: 100%; }
+            .search-bar select { padding-right: 15px; background-position: right 0px center; }
+            .search-bar input:last-of-type, .search-bar select:last-of-type { border-bottom: none; padding-bottom: 12px; }
+            .search-bar button#searchBtn { width: 100%; margin-top: 10px; }
+
+            .gallery-main { height: 350px; }
+            .gallery-thumbnails { grid-template-columns: repeat(3, 1fr); }
+            .reserve-box { padding: 20px; }
+            .reserve-dates { grid-template-columns: 1fr; }
+             .property-images .map-container { height: 250px; }
+             .property-info h3 { font-size: 1.3rem; }
+        }
+        @media (max-width: 600px) {
+             .container, .section-header, #listingsGrid { padding: 0 15px; }
+             #listingsGrid.listings-grid { grid-template-columns: 1fr; }
+             #listingsGrid.listings-list .listing-card { flex-direction: column; }
+             #listingsGrid.listings-list .listing-image-container { width: 100%; height: 200px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;}
+
+             .listing-card { width: 100%; height: auto; }
+             .listing-image-container { height: 250px; }
+             .listing-title { font-size: 1rem; min-height: 0; -webkit-line-clamp: 3; }
+             .gallery-main { height: 300px; }
+             .gallery-thumbnails { grid-template-columns: repeat(2, 1fr); }
+             .property-title { font-size: 1.6rem; }
+             .modal-content { padding: 25px 20px; width: 100%; }
+             footer { padding: 20px 15px; }
+             header h1 { font-size: 1.5rem; }
+             header button.auth-btn { font-size: 0.8rem; padding: 6px 12px; min-width: 0; }
+             .language-btn { font-size: 0.8rem; padding: 6px 10px; }
+             .profile-icon { width: 30px; height: 30px; font-size: 0.8rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <span class="sr-only">Loading...</span>
+</div>
+
+<header>
+    <div class="container">
+        <a href="#" id="logoHomeLink">
+             <h1>Gojo Rentals</h1>
+        </a>
+        <nav aria-label="Main navigation">
+            <a href="#" id="homeLink">Home</a>
+            <a href="#" id="listingsLink">Listings</a>
+            <a href="#" id="contactLink">Contact</a>
+        </nav>
+        <div class="buttons">
+            <div class="language-switcher">
+                <button class="language-btn" id="languageBtn" aria-haspopup="true" aria-expanded="false" aria-label="Change language">
+                    <i class="fas fa-globe" aria-hidden="true"></i> EN
+                </button>
+                <div class="language-dropdown" id="languageDropdown" role="menu">
+                    <div class="language-option" data-lang="en" role="menuitem">English</div>
+                    <div class="language-option" data-lang="am" role="menuitem">አማርኛ</div>
+                </div>
+            </div>
+            <!-- Profile Icon Added -->
+            <button id="profileIconBtn" class="profile-icon" aria-label="User profile">
+                 <i class="fas fa-user" aria-hidden="true"></i>
+            </button>
+            <span id="userName" style="display: none;"></span> <!-- Username still hidden -->
+            <button id="loginBtn" class="auth-btn">Login</button>
+            <button id="signupBtn" class="auth-btn">Sign Up</button>
+             <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section id="home" class="hero">
+        <div class="container">
+            <h2 id="heroTitle">Find Your Dream Home in Addis Ababa</h2>
+            <p id="heroSubtitle">Explore beautiful rental properties across Ethiopia's capital city.</p>
+            <div class="search-container">
+                <form class="search-bar" role="search" id="searchForm">
+                    <div class="location-input-wrapper">
+                        <input type="text" placeholder="Search by location (e.g., Bole, Kazanchis)..." id="locationInput" aria-label="Location">
+                        <button type="button" id="clearSearchBtn" aria-label="Clear search">&times;</button>
+                    </div>
+                    <select id="checkInSelect" aria-label="Check-in date" required>
+                        <option value="" disabled selected id="checkInPlaceholder">Check-in</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="weekend">This Weekend</option>
+                    </select>
+                    <select id="checkOutSelect" aria-label="Check-out date" required>
+                        <option value="" disabled selected id="checkOutPlaceholder">Check-out</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="weekend">This Weekend</option>
+                        <option value="next-week">Next Week</option>
+                    </select>
+                    <select id="guestsSelect" aria-label="Number of guests" required>
+                        <option value="" disabled selected id="guestsPlaceholder">Guests</option>
+                        <option value="1" id="guestOption1">1 Guest</option>
+                        <option value="2" id="guestOption2">2 Guests</option>
+                        <option value="3" id="guestOption3">3 Guests</option>
+                        <option value="4" id="guestOption4">4 Guests</option>
+                        <option value="5+" id="guestOption5plus">5+ Guests</option>
+                    </select>
+                    <button id="searchBtn" type="submit">
+                         <i class="fas fa-search" aria-hidden="true"></i>
+                         <span id="searchBtnText">Search</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="listings" class="listings-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" id="listingsTitle">Featured Properties</h2>
+                 <!-- Sorting Controls Added -->
+                <div class="sort-controls">
+                    <label for="sortOptions" id="sortByLabel">Sort by:</label>
+                    <select id="sortOptions" aria-labelledby="sortByLabel">
+                        <option value="default" id="sortDefault">Default</option>
+                        <option value="price_asc" id="sortPriceAsc">Price: Low to High</option>
+                        <option value="price_desc" id="sortPriceDesc">Price: High to Low</option>
+                        <option value="rating_desc" id="sortRatingDesc">Rating: High to Low</option>
+                    </select>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-option active" aria-label="Grid view" data-view="grid" aria-pressed="true"><i class="fas fa-th-large"></i></button>
+                    <button class="view-option" aria-label="List view" data-view="list" aria-pressed="false"><i class="fas fa-list"></i></button>
+                </div>
+            </div>
+
+            <div class="listings-grid" id="listingsGrid" role="list">
+                <!-- Listings inserted here -->
+            </div>
+             <p id="noResultsMessage" style="text-align: center; display: none; margin-top: 30px; font-size: 1.1rem; color: var(--text-light);">No properties found matching your search.</p>
+        </div>
+    </section>
+
+    <!-- Property Detail View -->
+    <section class="property-detail" id="propertyDetail" aria-labelledby="propertyTitle">
+        <div class="container">
+            <button class="back-btn" id="backBtn">
+                 <svg viewBox="0 0 18 18" role="presentation" aria-hidden="true" focusable="false" style="height: 1em; width: 1em; display: block; fill: currentcolor;"><path d="m13.7 16.29a1 1 0 1 1 -1.42 1.41l-8-8a1 1 0 0 1 0-1.41l8-8a1 1 0 1 1 1.42 1.41l-7.29 7.29z" fill-rule="evenodd"></path></svg>
+                <span id="backBtnText">Back to listings</span>
+            </button>
+
+            <div class="property-container">
+                <div class="property-images">
+                     <h1 id="propertyTitle" class="property-title sr-only"></h1>
+                    <div class="gallery-main">
+                        <img id="propertyMainImage" src="" alt="Main view of property" loading="lazy">
+                        <div class="property-image-rating">
+                           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style="display: block; height: 14px; width: 14px; fill: #FFD700;"><path d="M15.094 1.579l-4.124 8.885-9.86 1.27a1 1 0 0 0-.542 1.736l7.293 7.154-1.965 9.852a1 1 0 0 0 1.483 1.061L16 25.951l8.625 4.997a1 1 0 0 0 1.482-1.06l-1.965-9.853 7.293-7.154a1 1 0 0 0-.541-1.735l-9.86-1.271-4.127-8.885a1 1 0 0 0-1.814 0z" fill-rule="evenodd"></path></svg>
+                            <span id="propertyImageRating"></span>
+                        </div>
+                    </div>
+
+                    <div class="gallery-thumbnails" id="galleryThumbnails"></div>
+
+                     <!-- Map Container Moved Here -->
+                     <div class="map-container">
+                         <h3 id="whereYoullBeTitle">Where you'll be</h3>
+                         <div id="propertyMap"></div>
+                     </div>
+                </div>
+
+                <div class="property-info">
+                    <div class="property-header">
+                        <h1 id="propertyTitleDisplay" class="property-title"></h1>
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div id="propertyLocation" class="property-location">
+                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span></span>
+                            </div>
+                            <div id="propertyRating" class="property-rating">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style="display: block; height: 14px; width: 14px; fill: currentcolor;"><path d="M15.094 1.579l-4.124 8.885-9.86 1.27a1 1 0 0 0-.542 1.736l7.293 7.154-1.965 9.852a1 1 0 0 0 1.483 1.061L16 25.951l8.625 4.997a1 1 0 0 0 1.482-1.06l-1.965-9.853 7.293-7.154a1 1 0 0 0-.541-1.735l-9.86-1.271-4.127-8.885a1 1 0 0 0-1.814 0z" fill-rule="evenodd"></path></svg>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="property-owner">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Host Michael" class="owner-avatar" loading="lazy">
+                        <div class="owner-info">
+                            <h4 id="hostedByTitle">Hosted by Michael</h4>
+                            <p id="hostInfo">Superhost · 5 years hosting</p>
+                        </div>
+                    </div>
+
+
+                    <div id="propertyDescription" class="property-description"></div>
+
+                    <h3 id="offersTitle">What this place offers</h3>
+                    <div class="property-features" id="propertyFeatures" aria-label="Property features"></div>
+
+                    <!-- Reserve Box -->
+                     <div class="reserve-box">
+                        <div class="reserve-header" id="reserveHeader">Book your stay</div>
+                         <div class="property-price" id="propertyPrice"></div>
+                        <form id="reservationForm">
+                             <div class="reserve-dates">
+                                 <div class="date-input-group">
+                                     <label for="reserveCheckIn" id="checkInLabel">CHECK-IN</label>
+                                     <input type="date" class="date-input" id="reserveCheckIn" aria-label="Check-in date" required>
+                                 </div>
+                                <div class="date-input-group">
+                                    <label for="reserveCheckOut" id="checkOutLabel">CHECK-OUT</label>
+                                    <input type="date" class="date-input" id="reserveCheckOut" aria-label="Check-out date" required>
+                                </div>
+                            </div>
+                            <div class="guest-input-group">
+                                <label for="reserveGuests" id="guestsLabel">GUESTS</label>
+                                <select class="reserve-guests" id="reserveGuests" aria-label="Number of guests" required>
+                                    <option value="" disabled selected id="guestsSelectPlaceholder">Select guests</option>
+                                    <option value="1" id="guestOption1">1 Guest</option>
+                                    <option value="2" id="guestOption2">2 Guests</option>
+                                    <option value="3" id="guestOption3">3 Guests</option>
+                                    <option value="4" id="guestOption4">4 Guests</option>
+                                    <option value="5+" id="guestOption5plus">5+ Guests</option>
+                                </select>
+                            </div>
+                            <div class="reserve-price-details" id="reservePriceDetails" style="display: none;">
+                                <div>
+                                    <span class="price-label" id="pricePerNightLabel">Price per night</span>
+                                    <span class="price-value" id="pricePerNightValue"></span>
+                                </div>
+                                <div>
+                                    <span class="price-label" id="serviceFeeLabel">Service fee</span>
+                                     <span class="price-value" id="serviceFeeValue">150 ETB</span>
+                                </div>
+                            </div>
+                            <div class="reserve-total" id="reserveTotal" style="display: none;">
+                                <span id="totalLabel">Total</span>
+                                <span class="price" id="totalPrice"></span>
+                            </div>
+                            <button class="reserve-btn" id="reserveBtn" type="submit">
+                                <span id="reserveBtnText">Reserve</span>
+                             </button>
+                             <p id="reserveMessage" class="modal-message" style="display: none;"></p>
+                         </form>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Moved Reviews, Rating Below property-info -->
+             <div class="property-extra-details">
+                  <!-- Rating System -->
+                  <div class="rating-container">
+                     <h3 class="rating-title" id="rateStayTitle">Rate your stay</h3>
+                     <div class="stars" id="ratingStars" role="radiogroup" aria-label="Rate this property out of 5 stars">
+                         <button class="star" data-rating="1" role="radio" aria-checked="false" aria-label="1 star"><i class="fas fa-star"></i></button>
+                         <button class="star" data-rating="2" role="radio" aria-checked="false" aria-label="2 stars"><i class="fas fa-star"></i></button>
+                         <button class="star" data-rating="3" role="radio" aria-checked="false" aria-label="3 stars"><i class="fas fa-star"></i></button>
+                         <button class="star" data-rating="4" role="radio" aria-checked="false" aria-label="4 stars"><i class="fas fa-star"></i></button>
+                         <button class="star" data-rating="5" role="radio" aria-checked="false" aria-label="5 stars"><i class="fas fa-star"></i></button>
+                     </div>
+                 </div>
+
+                 <!-- Reviews section -->
+                 <div class="reviews-section">
+                     <div class="reviews-header">
+                         <h3 id="reviewsTitle">Guest Reviews</h3>
+                         <button class="add-review-btn" id="addReviewBtn">Add Review</button>
+                     </div>
+                     <div id="reviewsList">
+                         <div class="review-card">
+                              <div class="review-header">
+                                 <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Reviewer Sarah M." class="review-avatar">
+                                 <div> <div class="review-author">Sarah M.</div> <div class="review-date">March 2023</div> </div>
+                                 <div class="review-rating" aria-label="5 out of 5 stars">★★★★★</div>
+                             </div>
+                             <p class="review-content"> This apartment was perfect for our stay in Addis. The location was great and the host was very responsive. Would definitely stay here again! </p>
+                         </div>
+                          <div class="review-card">
+                              <div class="review-header">
+                                 <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Reviewer John D." class="review-avatar">
+                                  <div> <div class="review-author">John D.</div> <div class="review-date">January 2023</div> </div>
+                                 <div class="review-rating" aria-label="4 out of 5 stars">★★★★☆</div>
+                             </div>
+                             <p class="review-content"> Great place with amazing views. The only issue was the WiFi was a bit slow, but everything else was perfect. </p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contactSection" aria-labelledby="contactHeading">
+        <div class="container">
+            <h2 id="contactHeading">Contact Us</h2>
+            <p id="contactSubtitle">Have questions or need assistance? Reach out to our team.</p>
+            <div class="contact-info">
+                <div class="contact-item"> <i class="fas fa-envelope"></i> <span id="contactEmail">Email: <a href="mailto:gojorentals@gmail.com">gojorentals@gmail.com</a></span> </div>
+                <div class="contact-item"> <i class="fas fa-phone"></i> <span id="contactPhone">Phone: <a href="tel:+251966274112">+251 966 274 112</a></span> </div>
+                <div class="contact-item"> <i class="fas fa-map-marker-alt"></i> <span id="contactAddress">Address: Bole Road, Addis Ababa, Ethiopia</span> </div>
+                <div class="contact-item"> <i class="fas fa-clock"></i> <span id="contactHours">Hours: Monday-Friday, 9:00 AM - 6:00 PM EAT</span> </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+     <div class="lightbox-content">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close image viewer">&times;</button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="Full size property image">
+        <div class="lightbox-nav">
+            <button class="lightbox-btn" id="lightboxPrev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+            <button class="lightbox-btn" id="lightboxNext" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- Auth Modal -->
+<div id="authModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+        <button class="close-btn" aria-label="Close modal">&times;</button>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; <span id="currentYear"></span> Gojo Rentals Ethiopia. <span id="footerRights">All rights reserved.</span> | <a href="#" id="footerPrivacy">Privacy Policy</a> | <a href="#" id="footerTerms">Terms of Service</a></p>
+    </div>
+</footer>
+
+<!-- Leaflet JS for maps -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+    // Property data (Expanded to 20 listings)
+    const properties = {
+        1: { id: "1", title: "Luxury Bole Apartment", location: "Bole, Addis Ababa", rating: "4.92", price: 4500, image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "pool", "ac", "kitchen", "gym"], description: "Luxurious 2-bedroom apartment in Bole with city views, 24/7 security, gym, and rooftop terrace.", coordinates: [9.0054, 38.7636], type: "apartment", bedrooms: 2, amenities: ["wifi", "parking", "pool", "ac", "kitchen", "gym", "security"] },
+        2: { id: "2", title: "Kazanchis Guesthouse Charm", location: "Kazanchis, Addis Ababa", rating: "4.85", price: 3200, image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1591088398332-8a7791972843?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "kitchen", "tv", "breakfast", "garden"], description: "Cozy guesthouse in Kazanchis with a comfortable bedroom, kitchenette, and lovely garden.", coordinates: [9.0227, 38.7468], type: "guesthouse", bedrooms: 1, amenities: ["wifi", "kitchen", "tv", "breakfast", "garden"] },
+        3: { id: "3", title: "Old Airport Serene Villa", location: "Old Airport, Addis Ababa", rating: "4.98", price: 6800, image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "garden", "ac", "kitchen", "tv", "laundry"], description: "Spacious 3-bedroom villa in Old Airport with a large garden, private parking, and elegant interiors.", coordinates: [8.9962, 38.7986], type: "villa", bedrooms: 3, amenities: ["wifi", "parking", "garden", "ac", "kitchen", "tv", "laundry"] },
+        4: { id: "4", title: "Entoto Mountain View Chalet", location: "Entoto, Addis Ababa", rating: "4.79", price: 5500, image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["fireplace", "view", "parking", "nature", "wifi"], description: "Beautiful chalet in Entoto hills with breathtaking city views, large deck, and fireplace.", coordinates: [9.0833, 38.7667], type: "chalet", bedrooms: 2, amenities: ["fireplace", "view", "parking", "nature", "wifi", "sauna"] },
+        5: { id: "5", title: "Historic Piassa Studio", location: "Piassa, Addis Ababa", rating: "4.91", price: 2800, image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "central", "historic", "coffee"], description: "Charming studio in a historic Piassa building, renovated with modern comforts. Steps from cafes and culture.", coordinates: [9.0333, 38.7500], type: "studio", bedrooms: 1, amenities: ["wifi", "central", "historic", "coffee"] },
+        6: { id: "6", title: "Modern CMC Townhouse", location: "CMC, Addis Ababa", rating: "4.87", price: 4200, image: "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "kitchen", "tv", "family"], description: "Modern 2-bedroom townhouse in CMC with private garage, backyard, and open-plan living.", coordinates: [8.9833, 38.7833], type: "townhouse", bedrooms: 2, amenities: ["wifi", "parking", "kitchen", "tv", "family"] },
+        // --- ADDING 14 MORE LISTINGS ---
+        7: { id: "7", title: "Sar Bet Quiet Retreat", location: "Sar Bet, Addis Ababa", rating: "4.90", price: 3900, image: "https://images.unsplash.com/photo-1585412727339-74f416096eed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1585412727339-74f416096eed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "quiet", "garden", "workspace"], description: "Peaceful 1-bedroom cottage in Sar Bet with a beautiful garden, outdoor seating, and dedicated workspace.", coordinates: [9.0167, 38.7333], type: "cottage", bedrooms: 1, amenities: ["wifi", "quiet", "garden", "workspace"] },
+        8: { id: "8", title: "Gulele Forest Cabin Escape", location: "Gulele, Addis Ababa", rating: "4.88", price: 3500, image: "https://images.unsplash.com/photo-1559708945-a860431d7d7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1559708945-a860431d7d7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["nature", "hiking", "eco", "view"], description: "Unique eco-friendly cabin near Gulele Botanical Garden, surrounded by trees. Features wood-burning stove and deck.", coordinates: [9.0500, 38.7333], type: "cabin", bedrooms: 1, amenities: ["nature", "hiking", "eco", "view", "fireplace"] },
+        9: { id: "9", title: "Megenagna Penthouse Views", location: "Megenagna, Addis Ababa", rating: "4.93", price: 7200, image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1617806118233-18e1de247200?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "luxury", "pool", "gym", "view", "ac"], description: "Luxurious 3-bedroom penthouse in Megenagna with panoramic city views, large terrace, pool, and fitness center.", coordinates: [9.0167, 38.7833], type: "penthouse", bedrooms: 3, amenities: ["wifi", "luxury", "pool", "gym", "view", "ac", "parking", "kitchen"] },
+        10: { id: "10", title: "Bole Road Luxury Suite", location: "Bole Road, Addis Ababa", rating: "4.88", price: 5800, image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "ac", "kitchen", "tv", "laundry", "central"], description: "Elegant suite on prestigious Bole Road. King-size bedroom, modern kitchen, spacious living area. Ideal for business or luxury stays.", coordinates: [8.9962, 38.7986], type: "suite", bedrooms: 1, amenities: ["wifi", "parking", "ac", "kitchen", "tv", "laundry", "central"] },
+        11: { id: "11", title: "Yeka Hillside Villa Oasis", location: "Yeka, Addis Ababa", rating: "4.90", price: 6500, image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "garden", "view", "kitchen", "tv"], description: "Beautiful 3-bedroom hillside villa in Yeka with stunning city views, large terrace, landscaped garden, and modern interiors.", coordinates: [9.0167, 38.8000], type: "villa", bedrooms: 3, amenities: ["wifi", "parking", "garden", "view", "kitchen", "tv", "family"] },
+        12: { id: "12", title: "Kirkos Urban Loft Living", location: "Kirkos, Addis Ababa", rating: "4.82", price: 3800, image: "https://images.unsplash.com/photo-1502672260122-ac4ab280c64e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1502672260122-ac4ab280c64e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "central", "workspace", "kitchen"], description: "Stylish urban loft in vibrant Kirkos. Open-concept, industrial-chic design, full kitchen, work area. Near cafes & galleries.", coordinates: [9.0333, 38.7500], type: "loft", bedrooms: 1, amenities: ["wifi", "central", "workspace", "kitchen", "tv"] },
+        13: { id: "13", title: "Lafto Executive Apartment", location: "Lafto, Addis Ababa", rating: "4.86", price: 5200, image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf1591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1600607687920-4e2a09cf1591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "ac", "gym", "kitchen", "tv"], description: "Modern 2-bedroom executive apartment in Lafto, perfect for business travelers. Home office setup, premium furnishings, gym access.", coordinates: [9.0000, 38.7667], type: "apartment", bedrooms: 2, amenities: ["wifi", "parking", "ac", "gym", "kitchen", "tv", "workspace"] },
+        14: { id: "14", title: "Nifas Silk Garden House", location: "Nifas Silk, Addis Ababa", rating: "4.84", price: 4700, image: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "garden", "parking", "kitchen", "family"], description: "Charming 2-bedroom garden house in Nifas Silk offering a peaceful retreat with lush garden and covered patio.", coordinates: [9.0167, 38.7667], type: "house", bedrooms: 2, amenities: ["wifi", "garden", "parking", "kitchen", "family", "tv"] },
+        15: { id: "15", title: "Bole Medhanealem Condo", location: "Bole Medhanealem, Addis Ababa", rating: "4.91", price: 5400, image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "pool", "ac", "kitchen", "tv"], description: "Contemporary 2-bedroom condo in Bole Medhanealem. Modern furnishings, balcony with city views, shared pool. Walk to shops.", coordinates: [8.9962, 38.7986], type: "condo", bedrooms: 2, amenities: ["wifi", "parking", "pool", "ac", "kitchen", "tv", "central", "balcony"] },
+        16: { id: "16", title: "Gotera Compact Studio", location: "Gotera, Addis Ababa", rating: "4.80", price: 3100, image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1505691938895-1758d7feb511?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "central", "kitchen", "tv"], description: "Compact and efficient studio apartment in Gotera. Well-designed space with kitchenette, comfortable sleeping area, modern bathroom.", coordinates: [9.0167, 38.7500], type: "studio", bedrooms: 1, amenities: ["wifi", "central", "kitchen", "tv"] },
+        17: { id: "17", title: "Ayat Family Home", location: "Ayat, Addis Ababa", rating: "4.78", price: 4900, image: "https://images.unsplash.com/photo-1558036117-15d82a90b9b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1558036117-15d82a90b9b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["garden", "parking", "kitchen", "family", "wifi"], description: "Spacious 3-bedroom family home in Ayat residential area with garden and outdoor dining. Rustic experience with modern comforts.", coordinates: [9.0318, 38.8770], type: "house", bedrooms: 3, amenities: ["garden", "parking", "kitchen", "family", "wifi", "tv", "laundry"] },
+        18: { id: "18", title: "Meskel Square View Loft", location: "Meskel Square, Addis Ababa", rating: "4.85", price: 4900, image: "https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1560184897-ae75f418493e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "central", "view", "kitchen", "tv"], description: "Modern loft with stunning views of Meskel Square. Open-plan, floor-to-ceiling windows, designer furnishings, full kitchen.", coordinates: [9.0167, 38.7667], type: "loft", bedrooms: 1, amenities: ["wifi", "central", "view", "kitchen", "tv", "ac"] },
+        19: { id: "19", title: "Bole Bulbula Comfort Apt", location: "Bole Bulbula, Addis Ababa", rating: "4.83", price: 4400, image: "https://images.unsplash.com/photo-1494203484021-3c454daf695d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1494203484021-3c454daf695d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["wifi", "parking", "ac", "kitchen", "tv"], description: "Comfortable 2-bedroom apartment in Bole Bulbula. Modern amenities, easy airport access. Great value.", coordinates: [8.9833, 38.8000], type: "apartment", bedrooms: 2, amenities: ["wifi", "parking", "ac", "kitchen", "tv"] },
+        20: { id: "20", title: "Arada Historic Residence", location: "Arada, Addis Ababa", rating: "4.89", price: 5100, image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60", images: ["https://images.unsplash.com/photo-1540518614846-7eded433c457?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"], features: ["historic", "central", "wifi", "kitchen", "coffee"], description: "Beautifully restored historic residence in Arada district. Blends traditional architecture with modern comforts near cultural landmarks.", coordinates: [9.0333, 38.7500], type: "residence", bedrooms: 2, amenities: ["historic", "central", "wifi", "kitchen", "coffee", "tv"] }
+    };
+
+
+    // Feature icons mapping (Added sauna, balcony)
+    const featureIcons = { wifi: "fa-wifi", parking: "fa-parking", pool: "fa-swimming-pool", ac: "fa-snowflake", kitchen: "fa-utensils", tv: "fa-tv", breakfast: "fa-coffee", garden: "fa-tree", laundry: "fa-tshirt", fireplace: "fa-fire", view: "fa-binoculars", nature: "fa-leaf", central: "fa-map-marker-alt", historic: "fa-landmark", coffee: "fa-mug-hot", family: "fa-users", quiet: "fa-volume-mute", workspace: "fa-laptop", hiking: "fa-hiking", eco: "fa-recycle", luxury: "fa-crown", gym: "fa-dumbbell", security: "fa-shield-alt", sauna: "fa-hot-tub", balcony: "fa-images" // Using 'images' icon for balcony temporarily
+    };
+
+    // Feature names are now inside the translations object for easier management
+
+    // Translations (Expanded - REPLACE Amharic placeholders)
+    const translations = {
+        en: {
+            // Header & Nav
+            home: "Home", listings: "Listings", contact: "Contact", login: "Login", signup: "Sign Up", logout: "Logout", changeLanguage: "Change language", userProfile: "User profile",
+            // Hero & Search
+            heroTitle: "Find Your Dream Home in Addis Ababa", heroSubtitle: "Explore beautiful rental properties across Ethiopia's capital city.", searchPlaceholder: "Search by location (e.g., Bole, Kazanchis)...", checkInPlaceholder: "Check-in", checkOutPlaceholder: "Check-out", guestsPlaceholder: "Guests", guestOption1: "1 Guest", guestOption2: "2 Guests", guestOption3: "3 Guests", guestOption4: "4 Guests", guestOption5plus: "5+ Guests", searchBtnText: "Search", clearSearch: "Clear search",
+            // Listings View
+            featuredProperties: "Featured Properties", searchResults: "Search Results for", noResults: "No properties found matching your search.", gridView: "Grid view", listView: "List view", sortByLabel: "Sort by:", sortDefault: "Default", sortPriceAsc: "Price: Low to High", sortPriceDesc: "Price: High to Low", sortRatingDesc: "Rating: High to Low",
+            // Property Detail View
+            backToListings: "Back to listings", propertyDetails: "Property Details", hostedByTitle: "Hosted by", hostInfo: "Superhost · 5 years hosting", offersTitle: "What this place offers", showAllAmenities: "Show all amenities", whereYoullBeTitle: "Where you'll be", rateStayTitle: "Rate your stay", reviewsTitle: "Guest Reviews", addReviewBtn: "Add Review",
+            // Booking Box
+            bookYourStay: "Book your stay", checkInLabel: "CHECK-IN", checkOutLabel: "CHECK-OUT", guestsLabel: "GUESTS", guestsSelectPlaceholder: "Select guests", pricePerNightLabel: "Price per night", serviceFeeLabel: "Service fee", totalLabel: "Total", reserveBtnText: "Reserve", reserving: "Reserving...", reserved: "Reserved!", pleaseLogin: "Please log in or sign up to reserve.", bookingSuccess: "Reservation successful! Check your email for details.", bookingDateError: "Check-out date must be after check-in date.", bookingInputError: "Please select check-in, check-out dates, and number of guests.",
+            // Auth Modal
+            loginTitle: "Log in", signupTitle: "Sign Up", emailLabel: "Email Address", passwordLabel: "Password", fullNameLabel: "Full Name", createPasswordLabel: "Create Password", loginSuccess: "Login Successful!", signupSuccess: "Sign up Successful! Please login.", loginError: "Please enter both email and password.", loginPasswordError: "Password incorrect (demo).", signupError: "Please fill in all fields.", signupPasswordLengthError: "Password must be at least 8 characters.", signupPasswordStrengthError: "Password does not meet requirements.", passwordRequirements: `<span class="req-length">8+ characters</span><span class="req-uppercase">1 uppercase</span><span class="req-lowercase">1 lowercase</span><span class="req-letters">3+ letters total</span><span class="req-numberCount">4+ numbers</span><span class="req-symbol">1 symbol (!@#...)</span>`, passwordWeak: "Weak", passwordMedium: "Medium", passwordStrong: "Strong",
+            // Contact View
+            contactUs: "Contact Us", contactSubtitle: "Have questions or need assistance? Reach out to our team.", contactEmail: "Email:", contactPhone: "Phone:", contactAddress: "Address:", contactHours: "Hours:",
+            // Footer
+            footerRights: "All rights reserved.", footerPrivacy: "Privacy Policy", footerTerms: "Terms of Service",
+            // General
+            night: "night", nights: "nights", like: "Like", unlike: "Unlike", loading: "Loading...",
+            // Feature Names (English)
+            feature_wifi: "WiFi", feature_parking: "Free parking", feature_pool: "Pool", feature_ac: "Air Conditioning", feature_kitchen: "Kitchen", feature_tv: "TV", feature_breakfast: "Breakfast", feature_garden: "Garden", feature_laundry: "Washer", feature_fireplace: "Indoor fireplace", feature_view: "Great View", feature_nature: "Nature Setting", feature_central: "Central Location", feature_historic: "Historic Building", feature_coffee: "Coffee Maker", feature_family: "Family Friendly", feature_quiet: "Quiet Area", feature_workspace: "Dedicated Workspace", feature_hiking: "Hiking Nearby", feature_eco: "Eco Friendly", feature_luxury: "Luxury", feature_gym: "Gym Access", feature_security: "24/7 Security", feature_sauna: "Sauna", feature_balcony: "Balcony"
+        },
+        am: { // --- PLACEHOLDER AMHARIC --- Replace ALL below with actual translations
+            // Header & Nav
+            home: "መግቢያ", listings: "ዝርዝሮች", contact: "እውቂያ", login: "ግባ", signup: "ይመዝገቡ", logout: "ውጣ", changeLanguage: "ቋንቋ ቀይር", userProfile: "የተጠቃሚ መገለጫ",
+            // Hero & Search
+            heroTitle: "ህልምዎን ቤት በአዲስ አበባ ያግኙ", heroSubtitle: "በኢትዮጵያ ዋና ከተማ ያሉ ውብ የኪራይ ቤቶችን ያስሱ።", searchPlaceholder: "በአካባቢ ይፈልጉ (ለምሳሌ ቦሌ)...", checkInPlaceholder: "መግቢያ", checkOutPlaceholder: "መውጫ", guestsPlaceholder: "እንግዶች", guestOption1: "1 እንግዳ", guestOption2: "2 እንግዶች", guestOption3: "3 እንግዶች", guestOption4: "4 እንግዶች", guestOption5plus: "5+ እንግዶች", searchBtnText: "ፈልግ", clearSearch: "[ፍለጋ አጽዳ]",
+            // Listings View
+            featuredProperties: "ተመራጭ ንብረቶች", searchResults: "የፍለጋ ውጤቶች ለ", noResults: "ፍለጋዎን የሚዛመድ ንብረት አልተገኘም።", gridView: "ፍርግርግ እይታ", listView: "ዝርዝር እይታ", sortByLabel: "[በዚህ ደርድር]:", sortDefault: "[ነባሪ]", sortPriceAsc: "[ዋጋ: ዝቅተኛ -> ከፍተኛ]", sortPriceDesc: "[ዋጋ: ከፍተኛ -> ዝቅተኛ]", sortRatingDesc: "[ደረጃ: ከፍተኛ -> ዝቅተኛ]",
+            // Property Detail View
+            backToListings: "ወደ ዝርዝሮች ተመለስ", propertyDetails: "የንብረት ዝርዝሮች", hostedByTitle: "አስተናጋጅ", hostInfo: "[ሱፐር አስተናጋጅ · 5 ዓመታት]", offersTitle: "ይህ ቦታ የሚያቀርበው", showAllAmenities: "[ሁሉንም መገልገያዎች አሳይ]", whereYoullBeTitle: "የት እንደሚሆኑ", rateStayTitle: "ቆይታዎን ደረጃ ይስጡ", reviewsTitle: "የእንግዳ ግምገማዎች", addReviewBtn: "ግምገማ አክል",
+            // Booking Box
+            bookYourStay: "መኖርያዎን ያስይዙ", checkInLabel: "መግቢያ ቀን", checkOutLabel: "መውጫ ቀን", guestsLabel: "እንግዶች", guestsSelectPlaceholder: "እንግዶችን ይምረጡ", pricePerNightLabel: "የአንድ ሌሊት ዋጋ", serviceFeeLabel: "የአገልግሎት ክፍያ", totalLabel: "ጠቅላላ", reserveBtnText: "አስይዝ", reserving: "እየተያዘ ነው...", reserved: "ተይዟል!", pleaseLogin: "ለማስያዝ እባክዎ ይግቡ ወይም ይመዝገቡ።", bookingSuccess: "ቦታ ማስያዝ ተሳክቷል! ኢሜልዎን ያረጋግጡ።", bookingDateError: "የመውጫ ቀን ከመግቢያ ቀን በኋላ መሆን አለበት።", bookingInputError: "እባክዎ መግቢያ፣ መውጫ እና የእንግዳ ብዛት ይምረጡ።",
+            // Auth Modal
+            loginTitle: "ግባ", signupTitle: "ይመዝገቡ", emailLabel: "ኢሜይል አድራሻ", passwordLabel: "የይለፍ ቃል", fullNameLabel: "ሙሉ ስም", createPasswordLabel: "የይለፍ ቃል ፍጠር", loginSuccess: "በተሳካ ሁኔታ ገብተዋል!", signupSuccess: "ምዝገባ ተሳክቷል! እባክዎ ይግቡ።", loginError: "እባክዎ ኢሜይል እና የይለፍ ቃል ያስገቡ።", loginPasswordError: "የይለፍ ቃል ትክክል አይደለም።", signupError: "እባክዎ ሁሉንም መስኮች ይሙሉ።", signupPasswordLengthError: "የይለፍ ቃል ቢያንስ 8 ቁምፊዎች መሆን አለበት።", signupPasswordStrengthError: "የይለፍ ቃል መስፈርቶችን አያሟላም።", passwordRequirements: `<span class="req-length">[8+ ቁምፊዎች]</span><span class="req-uppercase">[1 ትልቅ ፊደል]</span><span class="req-lowercase">[1 ትንሽ ፊደል]</span><span class="req-letters">[3+ ፊደላት ጠቅላላ]</span><span class="req-numberCount">[4+ ቁጥሮች]</span><span class="req-symbol">[1 ምልክት (!@#...)]</span>`, passwordWeak: "ደካማ", passwordMedium: "መካከለኛ", passwordStrong: "ጠንካራ",
+            // Contact View
+            contactUs: "ያግኙን", contactSubtitle: "ጥያቄዎች አሉዎት? ቡድናችንን ያግኙ።", contactEmail: "ኢሜይል:", contactPhone: "ስልክ:", contactAddress: "አድራሻ:", contactHours: "ሰዓታት:",
+            // Footer
+            footerRights: "መብቱ በህግ የተጠበቀ ነው።", footerPrivacy: "የግላዊነት መመሪያ", footerTerms: "የአገልግሎት ውል",
+            // General
+            night: "ሌሊት", nights: "ሌሊቶች", like: "ላይክ", unlike: "አንላይክ", loading: "[በመጫን ላይ...]",
+             // Feature Names (Amharic - Placeholders)
+             feature_wifi: "ዋይፋይ", feature_parking: "ነጻ ፓርኪንግ", feature_pool: "መዋኛ ገንዳ", feature_ac: "ኤሲ", feature_kitchen: "ወጥ ቤት", feature_tv: "ቴሌቪዥን", feature_breakfast: "ቁርስ", feature_garden: "ጓሮ", feature_laundry: "ልብስ ማጠቢያ", feature_fireplace: "የእሳት ምድጃ", feature_view: "ድንቅ እይታ", feature_nature: "ተፈጥሯዊ", feature_central: "ማዕከላዊ", feature_historic: "ታሪካዊ", feature_coffee: "ቡና ማሽን", feature_family: "ለቤተሰብ", feature_quiet: "ጸጥ ያለ", feature_workspace: "የሥራ ቦታ", feature_hiking: "የእግር ጉዞ", feature_eco: "ለአካባቢ ተስማሚ", feature_luxury: "ቅንጡ", feature_gym: "ጂም", feature_security: "24/7 ጥበቃ", feature_sauna: "ሳውና", feature_balcony: "በረንዳ"
+        }
+    };
+
+
+    // State management
+    class AppState {
+        constructor() {
+            this.state = { isLoggedIn: false, userName: null, searchParams: { location: '', checkIn: '', checkOut: '', guests: '' }, modal: { isOpen: false, content: null, type: null }, currentView: 'listings', selectedProperty: null, calculatedNights: 1, userRating: 0, likedProperties: JSON.parse(localStorage.getItem('likedProperties')) || [], language: 'en', sortOrder: 'default', // Added for sorting
+                 currentImageIndex: 0, propertyImages: [], currentFilter: '', };
+            const storedLogin = localStorage.getItem('isLoggedIn');
+            const storedUserName = localStorage.getItem('userName');
+            if (storedLogin === 'true' && storedUserName) { this.state.isLoggedIn = true; this.state.userName = storedUserName; }
+        }
+        updateState(updates) {
+             if (updates.isLoggedIn !== undefined) { localStorage.setItem('isLoggedIn', updates.isLoggedIn); if (updates.isLoggedIn && updates.userName) { localStorage.setItem('userName', updates.userName); } else if (!updates.isLoggedIn) { localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userName'); updates.userName = null; } }
+            this.state = {...this.state, ...updates};
+            if (updates.likedProperties !== undefined) { localStorage.setItem('likedProperties', JSON.stringify(updates.likedProperties)); }
+            this.notifySubscribers();
+            return this.state;
+        }
+        getState() { return this.state; }
+        subscribers = [];
+        subscribe(callback) { this.subscribers.push(callback); }
+        unsubscribe(callback) { this.subscribers = this.subscribers.filter(sub => sub !== callback); }
+        notifySubscribers() { this.subscribers.forEach(callback => callback(this.state)); }
+    }
+    const appState = new AppState();
+
+    // DOM utilities
+    class DOMUtils {
+        static getElement(id) { return document.getElementById(id); }
+        static querySelector(selector) { return document.querySelector(selector); }
+        static querySelectorAll(selector) { return document.querySelectorAll(selector); }
+        static createElement(tag, attributes = {}, children = []) {
+            const element = document.createElement(tag);
+            Object.entries(attributes).forEach(([key, value]) => {
+                if (key === 'textContent' || key === 'innerHTML') { element[key] = value; }
+                else if (key.startsWith('on') && typeof value === 'function') { element.addEventListener(key.substring(2).toLowerCase(), value); }
+                else if (key === 'style' && typeof value === 'object') { Object.assign(element.style, value); }
+                else if (typeof value === 'boolean') { if (value) element.setAttribute(key, ''); }
+                else { element.setAttribute(key, value); }
+            });
+            children.forEach(child => {
+                if (child instanceof Node) { element.appendChild(child); }
+                else if (typeof child === 'string') { element.appendChild(document.createTextNode(child)); }
+            });
+            return element;
+        }
+        static renderListingCard(property, isLiked = false) {
+             const t = translations[appState.getState().language];
+             const card = DOMUtils.createElement('article', { class: 'listing-card', 'data-id': property.id, role: 'listitem', tabindex: 0 });
+             const imageContainer = DOMUtils.createElement('div', { class: 'listing-image-container' });
+             const image = DOMUtils.createElement('img', { src: property.image, alt: `${property.title} - ${property.location}`, class: 'listing-image', loading: 'lazy', width: 300, height: 300 });
+             const badgeText = property.type ? property.type.charAt(0).toUpperCase() + property.type.slice(1) : 'Rental';
+             const badge = DOMUtils.createElement('div', { class: 'listing-badge', textContent: badgeText });
+             const propertyTitle = property.title || 'property';
+             const likeButton = DOMUtils.createElement('button', { class: `like-button ${isLiked ? 'liked' : ''}`, 'aria-label': isLiked ? `${t.unlike} ${propertyTitle}` : `${t.like} ${propertyTitle}`, 'data-property-id': property.id });
+             likeButton.innerHTML = `<i class="fas fa-heart" aria-hidden="true"></i>`;
+             imageContainer.append(image, badge, likeButton);
+             const details = DOMUtils.createElement('div', { class: 'listing-details' });
+             const locationRating = DOMUtils.createElement('div', { class: 'listing-location' });
+             locationRating.innerHTML = `<span>${property.location.split(',')[0]}</span> <div class="listing-rating" aria-label="${property.rating} / 5"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style="display: block; height: 14px; width: 14px; fill: currentcolor;"><path d="M15.094 1.579l-4.124 8.885-9.86 1.27a1 1 0 0 0-.542 1.736l7.293 7.154-1.965 9.852a1 1 0 0 0 1.483 1.061L16 25.951l8.625 4.997a1 1 0 0 0 1.482-1.06l-1.965-9.853 7.293-7.154a1 1 0 0 0-.541-1.735l-9.86-1.271-4.127-8.885a1 1 0 0 0-1.814 0z" fill-rule="evenodd"></path></svg><span>${property.rating}</span></div>`;
+             const title = DOMUtils.createElement('h3', { class: 'listing-title', textContent: property.title });
+             const price = DOMUtils.createElement('div', { class: 'listing-price' });
+             price.innerHTML = `<strong>${property.price.toLocaleString()} ETB</strong> <span>/ ${t.night}</span>`;
+             details.append(locationRating, title, price);
+             card.append(imageContainer, details);
+             return card;
+         }
+    }
+
+    // View management
+    class ViewManager {
+        static init() {
+             this.listingsGrid = DOMUtils.getElement('listingsGrid');
+             this.propertyDetailView = DOMUtils.getElement('propertyDetail');
+             this.listingsSection = DOMUtils.getElement('listings');
+             this.contactSection = DOMUtils.getElement('contactSection');
+             this.propertyTitle = DOMUtils.getElement('propertyTitleDisplay');
+             this.propertyTitleSR = DOMUtils.getElement('propertyTitle');
+             this.propertyLocation = DOMUtils.getElement('propertyLocation').querySelector('span');
+             this.propertyRating = DOMUtils.getElement('propertyRating').querySelector('span');
+             this.propertyPrice = DOMUtils.getElement('propertyPrice');
+             this.propertyMainImage = DOMUtils.getElement('propertyMainImage');
+             this.propertyDescription = DOMUtils.getElement('propertyDescription');
+             this.featuresContainer = DOMUtils.getElement('propertyFeatures');
+             this.mapContainer = DOMUtils.getElement('propertyMap');
+             this.galleryThumbnails = DOMUtils.getElement('galleryThumbnails');
+             this.totalPriceElement = DOMUtils.getElement('totalPrice');
+             this.priceDetailsContainer = DOMUtils.getElement('reservePriceDetails');
+             this.totalContainer = DOMUtils.getElement('reserveTotal');
+             this.pricePerNightLabel = DOMUtils.getElement('pricePerNightLabel');
+             this.pricePerNightValue = DOMUtils.getElement('pricePerNightValue');
+             this.serviceFeeLabel = DOMUtils.getElement('serviceFeeLabel');
+             this.serviceFeeValue = DOMUtils.getElement('serviceFeeValue');
+             this.totalLabel = DOMUtils.querySelector('#reserveTotal span:first-child');
+             this.reserveMessage = DOMUtils.getElement('reserveMessage');
+             this.listingsTitle = DOMUtils.getElement('listingsTitle');
+             this.noResultsMessage = DOMUtils.getElement('noResultsMessage');
+             this.checkInInput = DOMUtils.getElement('reserveCheckIn');
+             this.checkOutInput = DOMUtils.getElement('reserveCheckOut');
+             this.reserveGuestsSelect = DOMUtils.getElement('reserveGuests');
+             this.loginBtn = DOMUtils.getElement('loginBtn');
+             this.signupBtn = DOMUtils.getElement('signupBtn');
+             this.logoutBtn = DOMUtils.getElement('logoutBtn');
+             this.profileIconBtn = DOMUtils.getElement('profileIconBtn');
+             this.locationInput = DOMUtils.getElement('locationInput'); // Cache location input
+             this.clearSearchBtn = DOMUtils.getElement('clearSearchBtn'); // Cache clear button
+             this.sortOptionsSelect = DOMUtils.getElement('sortOptions'); // Cache sort select
+             // Cache translated element references
+             this.homeLink = DOMUtils.getElement('homeLink');
+             this.listingsLink = DOMUtils.getElement('listingsLink');
+             this.contactLink = DOMUtils.getElement('contactLink');
+             this.heroTitle = DOMUtils.getElement('heroTitle');
+             this.heroSubtitle = DOMUtils.getElement('heroSubtitle');
+             this.checkInPlaceholder = DOMUtils.getElement('checkInPlaceholder');
+             this.checkOutPlaceholder = DOMUtils.getElement('checkOutPlaceholder');
+             this.guestsPlaceholder = DOMUtils.getElement('guestsPlaceholder');
+             this.guestOption1 = DOMUtils.getElement('guestOption1');
+             this.guestOption2 = DOMUtils.getElement('guestOption2');
+             this.guestOption3 = DOMUtils.getElement('guestOption3');
+             this.guestOption4 = DOMUtils.getElement('guestOption4');
+             this.guestOption5plus = DOMUtils.getElement('guestOption5plus');
+             this.searchBtnText = DOMUtils.getElement('searchBtnText');
+             this.backBtnText = DOMUtils.getElement('backBtnText');
+             this.hostedByTitle = DOMUtils.getElement('hostedByTitle');
+             this.hostInfo = DOMUtils.getElement('hostInfo');
+             this.offersTitle = DOMUtils.getElement('offersTitle');
+             this.whereYoullBeTitle = DOMUtils.getElement('whereYoullBeTitle');
+             this.rateStayTitle = DOMUtils.getElement('rateStayTitle');
+             this.reviewsTitle = DOMUtils.getElement('reviewsTitle');
+             this.addReviewBtn = DOMUtils.getElement('addReviewBtn');
+             this.reserveHeader = DOMUtils.getElement('reserveHeader');
+             this.checkInLabel = DOMUtils.getElement('checkInLabel');
+             this.checkOutLabel = DOMUtils.getElement('checkOutLabel');
+             this.guestsLabel = DOMUtils.getElement('guestsLabel');
+             this.guestsSelectPlaceholder = DOMUtils.getElement('guestsSelectPlaceholder');
+             this.reserveBtnText = DOMUtils.getElement('reserveBtnText');
+             this.contactHeading = DOMUtils.getElement('contactHeading');
+             this.contactSubtitle = DOMUtils.getElement('contactSubtitle');
+             this.contactEmail = DOMUtils.getElement('contactEmail').firstChild;
+             this.contactPhone = DOMUtils.getElement('contactPhone').firstChild;
+             this.contactAddress = DOMUtils.getElement('contactAddress').firstChild;
+             this.contactHours = DOMUtils.getElement('contactHours').firstChild;
+             this.footerRights = DOMUtils.getElement('footerRights');
+             this.footerPrivacy = DOMUtils.getElement('footerPrivacy');
+             this.footerTerms = DOMUtils.getElement('footerTerms');
+             this.sortByLabel = DOMUtils.getElement('sortByLabel');
+             this.sortDefault = DOMUtils.getElement('sortDefault');
+             this.sortPriceAsc = DOMUtils.getElement('sortPriceAsc');
+             this.sortPriceDesc = DOMUtils.getElement('sortPriceDesc');
+             this.sortRatingDesc = DOMUtils.getElement('sortRatingDesc');
+
+             this.setupViewToggles();
+             const today = new Date().toISOString().split('T')[0];
+             this.checkInInput.setAttribute('min', today);
+             this.checkOutInput.setAttribute('min', today);
+             this.checkInInput.addEventListener('change', this.updatePriceCalculation);
+             this.checkOutInput.addEventListener('change', this.updatePriceCalculation);
+             this.reserveGuestsSelect.addEventListener('change', this.updatePriceCalculation);
+        }
+        static setupViewToggles() {
+             const viewToggleButtons = DOMUtils.querySelectorAll('.view-toggle .view-option');
+             viewToggleButtons.forEach(button => {
+                 button.addEventListener('click', () => {
+                     viewToggleButtons.forEach(btn => btn.classList.remove('active'));
+                     button.classList.add('active');
+                     const viewType = button.dataset.view;
+                     this.listingsGrid.classList.toggle('listings-list', viewType === 'list');
+                     this.listingsGrid.classList.toggle('listings-grid', viewType === 'grid');
+                     button.setAttribute('aria-pressed', 'true');
+                     viewToggleButtons.forEach(btn => { if(btn !== button) btn.setAttribute('aria-pressed', 'false'); });
+                 });
+             });
+        }
+        // Updated renderListings to handle sorting
+         static renderListings(filteredProperties = null, sortOrder = null) {
+             const propertiesToRenderBase = filteredProperties || Object.values(properties);
+             const currentSortOrder = sortOrder || appState.getState().sortOrder || 'default';
+             const { likedProperties, currentFilter, language } = appState.getState();
+             const t = translations[language];
+
+             this.listingsGrid.innerHTML = '';
+             this.noResultsMessage.style.display = 'none';
+             this.listingsTitle.textContent = currentFilter ? `${t.searchResults} "${currentFilter}"` : t.featuredProperties;
+
+              // --- Sorting Logic ---
+             let propertiesToRender = [...propertiesToRenderBase]; // Create a mutable copy
+             if (currentSortOrder === 'price_asc') {
+                 propertiesToRender.sort((a, b) => a.price - b.price);
+             } else if (currentSortOrder === 'price_desc') {
+                 propertiesToRender.sort((a, b) => b.price - a.price);
+             } else if (currentSortOrder === 'rating_desc') {
+                 propertiesToRender.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+             }
+             // 'default' order doesn't require sorting here (uses original order)
+
+             // Show skeleton loaders
+             if (propertiesToRender.length > 0) {
+                 for (let i = 0; i < Math.min(propertiesToRender.length, 12); i++) {
+                     this.listingsGrid.appendChild(this.createSkeletonCard());
+                 }
+             }
+
+             setTimeout(() => {
+                 this.listingsGrid.innerHTML = '';
+                 if (propertiesToRender.length === 0) {
+                     this.noResultsMessage.textContent = `${t.noResults}${currentFilter ? ` "${currentFilter}"` : ''}`;
+                     this.noResultsMessage.style.display = 'block';
+                 } else {
+                     propertiesToRender.forEach(property => {
+                         const isLiked = likedProperties.includes(property.id);
+                         const card = DOMUtils.renderListingCard(property, isLiked);
+                         this.listingsGrid.appendChild(card);
+                     });
+                 }
+             }, 300);
+         }
+        static createSkeletonCard() {
+            const skeletonCard = DOMUtils.createElement('div', { class: 'listing-card skeleton skeleton-card' });
+            const skeletonImage = DOMUtils.createElement('div', { class: 'listing-image-container skeleton skeleton-image' });
+            const skeletonDetails = DOMUtils.createElement('div', { class: 'listing-details skeleton-details' });
+            skeletonDetails.append( DOMUtils.createElement('div', { class: 'skeleton skeleton-text short' }), DOMUtils.createElement('div', { class: 'skeleton skeleton-text' }), DOMUtils.createElement('div', { class: 'skeleton skeleton-text short' }), DOMUtils.createElement('div', { class: 'skeleton skeleton-text', style: { marginTop: '10px', width: '40%' } }) );
+            skeletonCard.append(skeletonImage, skeletonDetails);
+            return skeletonCard;
+        }
+        static showPropertyView(propertyId) {
+            const property = properties[propertyId];
+            if (!property) return;
+            const t = translations[appState.getState().language];
+            const propertyImages = property.images && property.images.length > 0 ? property.images : [property.image];
+            appState.updateState({ propertyImages, currentImageIndex: 0 });
+
+            this.listingsSection.classList.add('fade-out');
+            LoadingManager.showLoading();
+
+            setTimeout(() => {
+                this.listingsSection.style.display = 'none';
+                this.propertyDetailView.style.display = 'block';
+                this.contactSection.style.display = 'none';
+
+                this.propertyTitle.textContent = property.title;
+                this.propertyTitleSR.textContent = property.title;
+                this.propertyLocation.textContent = property.location;
+                this.propertyRating.textContent = `${property.rating} (${Math.floor(Math.random() * 50) + 5} reviews)`;
+                DOMUtils.getElement('propertyImageRating').textContent = `${property.rating}`;
+                this.propertyPrice.innerHTML = `<strong>${property.price.toLocaleString()} ETB</strong> <span>/ ${t.night}</span>`;
+                this.propertyMainImage.src = propertyImages[0];
+                this.propertyMainImage.alt = `Main view of ${property.title}`;
+                this.propertyDescription.textContent = property.description;
+
+                this.featuresContainer.innerHTML = '';
+                const featuresToShow = property.amenities || property.features || [];
+                featuresToShow.slice(0, 8).forEach(featureKey => {
+                    const featureName = t[`feature_${featureKey}`] || featureKey;
+                    if (featureIcons[featureKey]) {
+                        const featureElement = DOMUtils.createElement('div', { class: 'feature' });
+                        featureElement.innerHTML = `<i class="fas ${featureIcons[featureKey]}" aria-hidden="true"></i> ${featureName}`;
+                        this.featuresContainer.appendChild(featureElement);
+                    }
+                });
+                if (featuresToShow.length > 8) {
+                    const showAllBtn = DOMUtils.createElement('button', { class: 'feature show-all-features', textContent: `${t.showAllAmenities} (${featuresToShow.length})` });
+                    this.featuresContainer.appendChild(showAllBtn);
+                }
+
+                this.galleryThumbnails.innerHTML = '';
+                propertyImages.forEach((imgSrc, index) => {
+                    const thumbDiv = DOMUtils.createElement('div', { class: `thumbnail ${index === 0 ? 'active' : ''}`, 'data-index': index, tabindex: 0, role: 'button', 'aria-label': `View image ${index + 1}` });
+                    const thumbImg = DOMUtils.createElement('img', { src: imgSrc.replace(/w=\d+/g, 'w=200'), alt: `Thumbnail ${index + 1}`, loading: 'lazy', width: 100, height: 100 });
+                    thumbDiv.appendChild(thumbImg);
+                    this.galleryThumbnails.appendChild(thumbDiv);
+                });
+
+                if (typeof L !== 'undefined') { this.initMap(property.coordinates, property.title); }
+                else { console.warn("Leaflet not loaded."); DOMUtils.getElement('propertyMap').innerHTML = '<p>Map could not be loaded.</p>'; }
+
+                appState.updateState({ calculatedNights: 1 });
+                this.checkInInput.value = ''; this.checkOutInput.value = ''; this.reserveGuestsSelect.value = '';
+                this.updatePriceCalculation();
+                appState.updateState({ userRating: 0 }); this.updateStarRatingDisplay();
+                const reserveBtn = DOMUtils.getElement('reserveBtn');
+                reserveBtn.classList.remove('reserved', 'loading'); reserveBtn.disabled = false;
+                this.reserveBtnText.textContent = t.reserveBtnText; // Use cached element
+                this.reserveMessage.style.display = 'none'; this.reserveMessage.textContent = '';
+
+                LoadingManager.hideLoading();
+                this.propertyDetailView.classList.add('fade-in'); this.propertyDetailView.style.opacity = '1';
+                appState.updateState({ currentView: 'property', selectedProperty: propertyId });
+                window.scrollTo(0, 0);
+            }, 300);
+        }
+        static showListingsView(scrollToTop = true) {
+            LoadingManager.showLoading();
+            this.propertyDetailView.classList.remove('fade-in'); this.propertyDetailView.style.opacity = '0';
+            this.contactSection.style.display = 'none';
+            appState.updateState({ currentFilter: '', sortOrder: 'default' }); // Reset filter and sort
+            if(this.sortOptionsSelect) this.sortOptionsSelect.value = 'default'; // Reset dropdown UI
+
+            setTimeout(() => {
+                this.propertyDetailView.style.display = 'none'; this.listingsSection.style.display = 'block';
+                this.renderListings(); // Render with default sort
+                this.listingsSection.classList.remove('fade-out'); this.listingsSection.style.opacity = '1';
+                LoadingManager.hideLoading();
+                appState.updateState({ currentView: 'listings', selectedProperty: null });
+                if (scrollToTop) window.scrollTo(0, 0);
+            }, 300);
+        }
+        static initMap(coordinates, title) {
+            const mapElement = DOMUtils.getElement('propertyMap');
+            if (!mapElement) { console.error("Map container (#propertyMap) not found"); return; }
+            if (this.map) { this.map.remove(); this.map = null; }
+            mapElement.innerHTML = '';
+            try {
+                this.map = L.map(mapElement).setView(coordinates, 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM', maxZoom: 18 }).addTo(this.map);
+                const customIcon = L.icon({ iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGMzg1QyIgd2lkdGg9IjM2cHgiIGhlaWdodD0iMzZweCI+PHBhdGggZD0iTTEyIDJDOC4xMyAyIDUgNS4xMyA1IDljMCA1LjI1IDcgMTMgNyAxM3M3LTcuNzUgNy0xM2MwLTMuODctMy4xMy03LTctN3ptMCA5LjVjLTEuMzggMC0yLjUtMS4xMi0yLjUtMi41czEuMTItMi41IDIuNS0yLjUgMi41IDEuMTIgMi41IDIuNXMtMS4xMiAyLjUtMi41IDIuNXoiLz48L3N2Zz4=', iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -38] });
+                L.marker(coordinates, { icon: customIcon }).addTo(this.map).bindPopup(`<b>${title}</b><br>Location approx.`).openPopup();
+                // Use requestAnimationFrame for smoother resize handling
+                requestAnimationFrame(() => {
+                     setTimeout(() => { if (this.map) this.map.invalidateSize(); }, 100); // Delay slightly more
+                });
+            } catch (error) { console.error("Error initializing map:", error); mapElement.innerHTML = '<p style="color: red;">Error loading map.</p>'; }
+        }
+        static showContactView() {
+            this.propertyDetailView.style.display = 'none'; this.listingsSection.style.display = 'none';
+            this.contactSection.style.display = 'block'; this.contactSection.style.opacity = '0';
+            setTimeout(() => { this.contactSection.style.opacity = '1'; appState.updateState({ currentView: 'contact' }); window.scrollTo(0, 0); }, 10);
+        }
+        static updatePriceCalculation() {
+              const { selectedProperty, language } = appState.getState();
+             const t = translations[language];
+             if (!selectedProperty || !this.checkInInput || !this.checkOutInput) return;
+             const property = properties[selectedProperty];
+             const checkInDate = this.checkInInput.value ? new Date(this.checkInInput.value) : null;
+             const checkOutDate = this.checkOutInput.value ? new Date(this.checkOutInput.value) : null;
+
+             if (checkInDate) { const nextDay = new Date(checkInDate); nextDay.setDate(checkInDate.getDate() + 1); this.checkOutInput.setAttribute('min', nextDay.toISOString().split('T')[0]); }
+
+             if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+                 const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                 const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                 if (nights > 0) {
+                     appState.updateState({ calculatedNights: nights });
+                     const basePrice = property.price * nights;
+                     const serviceFee = 150; const total = basePrice + serviceFee;
+                     this.pricePerNightValue.textContent = `${property.price.toLocaleString()} ETB x ${nights} ${nights > 1 ? t.nights : t.night}`;
+                     this.serviceFeeValue.textContent = `${serviceFee.toLocaleString()} ETB`;
+                     this.totalPriceElement.textContent = `${total.toLocaleString()} ETB`;
+                     this.priceDetailsContainer.style.display = 'block';
+                     this.totalContainer.style.display = 'flex';
+                     return;
+                 }
+             }
+             appState.updateState({ calculatedNights: 0 });
+             this.priceDetailsContainer.style.display = 'none';
+             this.totalContainer.style.display = 'none';
+         }
+        static updateStarRatingDisplay() {
+            const { userRating } = appState.getState();
+            const stars = DOMUtils.querySelectorAll('.star');
+            stars.forEach(starButton => { const ratingValue = parseInt(starButton.getAttribute('data-rating')); if (ratingValue <= userRating) { starButton.classList.add('active'); starButton.setAttribute('aria-checked', 'true'); } else { starButton.classList.remove('active'); starButton.setAttribute('aria-checked', 'false'); } });
+        }
+        static toggleLike(propertyId, buttonElement) {
+            const { likedProperties, language } = appState.getState();
+            const t = translations[language];
+            const wasLiked = likedProperties.includes(propertyId);
+            let newLikedProperties;
+            const propertyTitle = properties[propertyId]?.title || 'property';
+            if (wasLiked) { newLikedProperties = likedProperties.filter(id => id !== propertyId); buttonElement.classList.remove('liked'); buttonElement.setAttribute('aria-label', `${t.like} ${propertyTitle}`); }
+            else { newLikedProperties = [...likedProperties, propertyId]; buttonElement.classList.add('liked'); buttonElement.setAttribute('aria-label', `${t.unlike} ${propertyTitle}`); buttonElement.style.animation = 'heartBeat 0.5s ease'; setTimeout(() => { buttonElement.style.animation = ''; }, 500); }
+            appState.updateState({ likedProperties: newLikedProperties });
+        }
+        static openLightbox(index) {
+            const { propertyImages } = appState.getState();
+            if (!propertyImages || propertyImages.length === 0) return;
+            const lightbox = DOMUtils.getElement('lightbox'); const lightboxImg = DOMUtils.getElement('lightboxImg');
+            const validIndex = Math.max(0, Math.min(index, propertyImages.length - 1));
+            lightboxImg.src = propertyImages[validIndex]; lightbox.style.display = 'flex';
+            setTimeout(() => DOMUtils.getElement('lightboxClose').focus(), 50);
+            appState.updateState({ currentImageIndex: validIndex });
+        }
+        static navigateLightbox(direction) {
+            const { propertyImages, currentImageIndex } = appState.getState();
+            let newIndex = currentImageIndex + direction;
+            if (newIndex < 0) newIndex = propertyImages.length - 1; else if (newIndex >= propertyImages.length) newIndex = 0;
+            DOMUtils.getElement('lightboxImg').src = propertyImages[newIndex];
+            appState.updateState({ currentImageIndex: newIndex });
+        }
+        static closeLightbox() {
+            DOMUtils.getElement('lightbox').style.display = 'none';
+            const activeThumb = DOMUtils.querySelector(`.thumbnail[data-index="${appState.getState().currentImageIndex}"]`);
+            if (activeThumb) activeThumb.focus();
+        }
+        static toggleLanguage(lang) {
+            if (translations[lang]) {
+                appState.updateState({ language: lang });
+                this.updateTranslations();
+                DOMUtils.getElement('languageBtn').innerHTML = `<i class="fas fa-globe" aria-hidden="true"></i> ${lang.toUpperCase()}`;
+                document.documentElement.lang = lang;
+            }
+        }
+        static updateTranslations() {
+             const { language } = appState.getState();
+             const t = translations[language];
+
+             // --- Update all relevant elements using cached references ---
+             this.homeLink.textContent = t.home;
+             this.listingsLink.textContent = t.listings;
+             this.contactLink.textContent = t.contact;
+             this.loginBtn.textContent = t.login;
+             this.signupBtn.textContent = t.signup;
+             this.logoutBtn.textContent = t.logout;
+             DOMUtils.getElement('languageBtn').setAttribute('aria-label', t.changeLanguage);
+             this.profileIconBtn.setAttribute('aria-label', t.userProfile);
+
+             this.heroTitle.textContent = t.heroTitle;
+             this.heroSubtitle.textContent = t.heroSubtitle;
+             this.locationInput.placeholder = t.searchPlaceholder;
+             this.checkInPlaceholder.textContent = t.checkInPlaceholder;
+             this.checkOutPlaceholder.textContent = t.checkOutPlaceholder;
+             this.guestsPlaceholder.textContent = t.guestsPlaceholder;
+             this.guestOption1.textContent = t.guestOption1;
+             this.guestOption2.textContent = t.guestOption2;
+             this.guestOption3.textContent = t.guestOption3;
+             this.guestOption4.textContent = t.guestOption4;
+             this.guestOption5plus.textContent = t.guestOption5plus;
+             this.searchBtnText.textContent = t.searchBtnText;
+             DOMUtils.getElement('clearSearchBtn').setAttribute('aria-label', t.clearSearch); // Translate clear button
+
+             // Translate sort options
+             this.sortByLabel.textContent = t.sortByLabel;
+             this.sortDefault.textContent = t.sortDefault;
+             this.sortPriceAsc.textContent = t.sortPriceAsc;
+             this.sortPriceDesc.textContent = t.sortPriceDesc;
+             this.sortRatingDesc.textContent = t.sortRatingDesc;
+
+             if (appState.getState().currentView === 'listings') {
+                 this.listingsTitle.textContent = appState.getState().currentFilter ? `${t.searchResults} "${appState.getState().currentFilter}"` : t.featuredProperties;
+                 if (this.noResultsMessage.style.display === 'block') { this.noResultsMessage.textContent = `${t.noResults}${appState.getState().currentFilter ? ` "${appState.getState().currentFilter}"` : ''}`; }
+             }
+
+             this.backBtnText.textContent = t.backToListings;
+             this.hostedByTitle.textContent = t.hostedByTitle;
+             this.hostInfo.textContent = t.hostInfo;
+             this.offersTitle.textContent = t.offersTitle;
+             this.whereYoullBeTitle.textContent = t.whereYoullBeTitle;
+             this.rateStayTitle.textContent = t.rateStayTitle;
+             this.reviewsTitle.textContent = t.reviewsTitle;
+             this.addReviewBtn.textContent = t.addReviewBtn;
+
+             this.reserveHeader.textContent = t.bookYourStay;
+             this.checkInLabel.textContent = t.checkInLabel;
+             this.checkOutLabel.textContent = t.checkOutLabel;
+             this.guestsLabel.textContent = t.guestsLabel;
+             this.guestsSelectPlaceholder.textContent = t.guestsSelectPlaceholder;
+             this.pricePerNightLabel.textContent = t.pricePerNightLabel;
+             this.serviceFeeLabel.textContent = t.serviceFeeLabel;
+             this.totalLabel.textContent = t.totalLabel;
+             const reserveBtn = DOMUtils.getElement('reserveBtn');
+             const reserveBtnSpan = reserveBtn.querySelector('span'); // Get span inside
+             if (reserveBtn.classList.contains('reserved')) { reserveBtnSpan.textContent = t.reserved; }
+             else if (reserveBtn.classList.contains('loading')) { /* Keep loading visual */ }
+             else { reserveBtnSpan.textContent = t.reserveBtnText; }
+             this.updatePriceCalculation();
+
+             this.contactHeading.textContent = t.contactUs;
+             this.contactSubtitle.textContent = t.contactSubtitle;
+             this.contactEmail.nodeValue = t.contactEmail + ' '; // Update text node
+             this.contactPhone.nodeValue = t.contactPhone + ' ';
+             this.contactAddress.nodeValue = t.contactAddress + ' ';
+             this.contactHours.nodeValue = t.contactHours + ' ';
+
+             this.footerRights.textContent = t.footerRights;
+             this.footerPrivacy.textContent = t.footerPrivacy;
+             this.footerTerms.textContent = t.footerTerms;
+
+             if (appState.getState().currentView === 'property' && this.featuresContainer) { this.updateFeatureTranslations(); }
+             if (appState.getState().modal.isOpen && appState.getState().modal.type === 'signup') { this.updatePasswordRequirementTranslations(); }
+        }
+        static updateFeatureTranslations() {
+             const t = translations[appState.getState().language];
+             this.featuresContainer.querySelectorAll('.feature').forEach(el => {
+                 const iconClass = el.querySelector('i')?.className.split(' ').find(cls => cls.startsWith('fa-'));
+                 if (!iconClass) return;
+                 const featureKey = Object.keys(featureIcons).find(key => featureIcons[key] === iconClass);
+                 if (featureKey) { const featureName = t[`feature_${featureKey}`] || featureKey; el.innerHTML = `<i class="fas ${featureIcons[featureKey]}" aria-hidden="true"></i> ${featureName}`; }
+             });
+             const showAllBtn = this.featuresContainer.querySelector('.show-all-features');
+             if (showAllBtn) { const propId = appState.getState().selectedProperty; const totalAmenities = properties[propId]?.amenities?.length || 0; if (totalAmenities > 8) { showAllBtn.textContent = `${t.showAllAmenities} (${totalAmenities})`; } }
+        }
+        static updatePasswordRequirementTranslations() {
+             const t = translations[appState.getState().language];
+             const requirementsElement = DOMUtils.getElement('passwordRequirementsFeedback');
+             if (requirementsElement) {
+                 requirementsElement.innerHTML = t.passwordRequirements;
+                 const passwordInput = DOMUtils.getElement('signupPassword');
+                 if (passwordInput && passwordInput.value) {
+                     const strengthResult = FormManager.checkPasswordStrength(passwordInput.value);
+                     EventHandlers.updatePasswordStrengthUI(passwordInput, strengthResult);
+                 }
+             }
+        }
+
+        static updateLoginStateUI(state) {
+            const { isLoggedIn, userName } = state;
+            const t = translations[appState.getState().language];
+            if (isLoggedIn) {
+                 ViewManager.loginBtn.style.display = 'none';
+                 ViewManager.signupBtn.style.display = 'none';
+                 ViewManager.logoutBtn.style.display = 'inline-block';
+                 ViewManager.profileIconBtn.classList.add('show');
+                 ViewManager.profileIconBtn.setAttribute('aria-label', t.userProfile);
+            } else {
+                 ViewManager.loginBtn.style.display = 'inline-block';
+                 ViewManager.signupBtn.style.display = 'inline-block';
+                 ViewManager.logoutBtn.style.display = 'none';
+                 ViewManager.profileIconBtn.classList.remove('show');
+                 ViewManager.profileIconBtn.setAttribute('aria-label', t.userProfile);
+            }
+        }
+    }
+
+    // Modal management
+    class ModalManager {
+        static init() { this.modal = DOMUtils.getElement('authModal'); this.modalContent = DOMUtils.getElement('modalContent'); this.closeBtn = this.modal.querySelector('.close-btn'); this.closeBtn.addEventListener('click', () => this.closeModal()); this.modal.addEventListener('click', (e) => { if (e.target === this.modal) { this.closeModal(); } }); }
+        static openModal(content, type) { appState.updateState({ modal: { isOpen: true, content, type } }); this.modalContent.innerHTML = ''; this.modalContent.appendChild(content); this.modal.classList.add('show'); this.modal.setAttribute('aria-hidden', 'false'); this.trapFocus(this.modal); }
+        static closeModal() { appState.updateState({ modal: { isOpen: false, content: null, type: null } }); this.modal.classList.remove('show'); this.modal.setAttribute('aria-hidden', 'true'); }
+        static trapFocus(element) { const focusableElements = element.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'); if (focusableElements.length === 0) return; const firstElement = focusableElements[0]; const lastElement = focusableElements[focusableElements.length - 1]; element._trapFocusKeydownListener = (e) => { if (!element.classList.contains('show')) return; if (e.key === 'Tab') { if (e.shiftKey) { if (document.activeElement === firstElement) { lastElement.focus(); e.preventDefault(); } } else { if (document.activeElement === lastElement) { firstElement.focus(); e.preventDefault(); } } } }; element.removeEventListener('keydown', element._trapFocusKeydownListener); element.addEventListener('keydown', element._trapFocusKeydownListener); setTimeout(() => { if (element.classList.contains('show')) firstElement.focus(); }, 100); }
+    }
+
+    // Form management
+    class FormManager {
+         static createLoginForm() {
+             const t = translations[appState.getState().language];
+             const form = DOMUtils.createElement('form', { id: 'loginForm', novalidate: true });
+             const heading = DOMUtils.createElement('h2', { id: 'modalTitle', textContent: t.loginTitle });
+             const emailGroup = DOMUtils.createElement('div', { class: 'form-group' }, [ DOMUtils.createElement('label', { for: 'loginEmail', textContent: t.emailLabel }), DOMUtils.createElement('input', { type: 'email', id: 'loginEmail', name: 'email', placeholder: 'you@example.com', required: true, autocomplete: 'email' }) ]);
+             const passwordGroup = DOMUtils.createElement('div', { class: 'form-group' }, [ DOMUtils.createElement('label', { for: 'loginPassword', textContent: t.passwordLabel }), DOMUtils.createElement('input', { type: 'password', id: 'loginPassword', name: 'password', placeholder: '••••••••', required: true, autocomplete: 'current-password' }) ]);
+             const messageDiv = DOMUtils.createElement('div', { class: 'modal-message error', id: 'loginMessage' });
+             const submitBtn = DOMUtils.createElement('button', { type: 'submit', textContent: t.login });
+             form.append(heading, emailGroup, passwordGroup, messageDiv, submitBtn);
+             form.addEventListener('submit', EventHandlers.handleLoginSubmit);
+             return form;
+         }
+        static createSignupForm() {
+             const t = translations[appState.getState().language];
+             const form = DOMUtils.createElement('form', { id: 'signupForm', novalidate: true });
+             const heading = DOMUtils.createElement('h2', { id: 'modalTitle', textContent: t.signupTitle });
+             const nameGroup = DOMUtils.createElement('div', { class: 'form-group' }, [ DOMUtils.createElement('label', { for: 'signupName', textContent: t.fullNameLabel }), DOMUtils.createElement('input', { type: 'text', id: 'signupName', name: 'name', placeholder: t.fullNameLabel, required: true, autocomplete: 'name' }) ]);
+             const emailGroup = DOMUtils.createElement('div', { class: 'form-group' }, [ DOMUtils.createElement('label', { for: 'signupEmail', textContent: t.emailLabel }), DOMUtils.createElement('input', { type: 'email', id: 'signupEmail', name: 'email', placeholder: 'you@example.com', required: true, autocomplete: 'email' }) ]);
+             const passwordGroup = DOMUtils.createElement('div', { class: 'form-group' });
+             const passwordLabel = DOMUtils.createElement('label', { for: 'signupPassword', textContent: t.createPasswordLabel });
+             const passwordInput = DOMUtils.createElement('input', { type: 'password', id: 'signupPassword', name: 'password', placeholder: '••••••••', required: true, minlength: 8, autocomplete: 'new-password', 'aria-describedby': 'passwordStrengthFeedback passwordRequirementsFeedback' });
+             const strengthFeedback = DOMUtils.createElement('div', { id: 'passwordStrengthFeedback', class: 'password-strength-feedback', 'aria-live': 'polite' });
+             const requirementsFeedback = DOMUtils.createElement('div', { id: 'passwordRequirementsFeedback', class: 'password-requirements', innerHTML: t.passwordRequirements });
+             passwordGroup.append(passwordLabel, passwordInput, strengthFeedback, requirementsFeedback);
+             const messageDiv = DOMUtils.createElement('div', { class: 'modal-message error', id: 'signupMessage' });
+             const submitBtn = DOMUtils.createElement('button', { type: 'submit', textContent: t.signup });
+             form.append(heading, nameGroup, emailGroup, passwordGroup, messageDiv, submitBtn);
+             passwordInput.addEventListener('input', EventHandlers.handlePasswordInput);
+             form.addEventListener('submit', EventHandlers.handleSignupSubmit);
+             return form;
+         }
+        static checkPasswordStrength(password) {
+             const requirements = {
+                 length: password.length >= 8,
+                 uppercase: /[A-Z]/.test(password),
+                 lowercase: /[a-z]/.test(password),
+                 letters: (password.match(/[a-zA-Z]/g) || []).length >= 3,
+                 numberCount: (password.match(/[0-9]/g) || []).length >= 4,
+                 symbol: /[^A-Za-z0-9]/.test(password)
+             };
+             const score = Object.values(requirements).filter(Boolean).length;
+             const allMet = score === Object.keys(requirements).length;
+             let strength = 'weak';
+             if (allMet) strength = 'strong';
+             else if (score >= 4) strength = 'medium';
+             return { score, strength, requirements, allMet };
+         }
+        static validateSearch(form) { const location = form.querySelector('#locationInput').value.trim(); if (!location) { alert('Please enter a location'); form.querySelector('#locationInput').focus(); return null; } return location; }
+        static performSearch(searchTerm) {
+             LoadingManager.showLoading();
+             const searchBtn = DOMUtils.getElement('searchBtn'); // Get search button
+             searchBtn.classList.add('loading'); // Add loading class
+             searchBtn.disabled = true; // Disable button
+
+             appState.updateState({ currentFilter: searchTerm });
+             const filtered = Object.values(properties).filter(prop => prop.location.toLowerCase().includes(searchTerm.toLowerCase()) || prop.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+             // Use setTimeout to simulate network delay and allow loading state to show
+             setTimeout(() => {
+                 ViewManager.renderListings(filtered); // Render after delay
+                 LoadingManager.hideLoading();
+                 searchBtn.classList.remove('loading'); // Remove loading class
+                 searchBtn.disabled = false; // Re-enable button
+            }, 600); // Simulate 600ms search time
+         }
+        static handleReservationSubmit(e) {
+             e.preventDefault(); const t = translations[appState.getState().language]; const reserveBtn = DOMUtils.getElement('reserveBtn'); const messageElement = ViewManager.reserveMessage; messageElement.textContent = ''; messageElement.className = 'modal-message'; messageElement.style.display = 'none';
+             if (!appState.getState().isLoggedIn) { messageElement.textContent = t.pleaseLogin; messageElement.classList.add('error'); messageElement.style.display = 'block'; setTimeout(() => { ModalManager.openModal(FormManager.createLoginForm(), 'login'); }, 300); return; }
+             const checkIn = ViewManager.checkInInput.value; const checkOut = ViewManager.checkOutInput.value; const guests = ViewManager.reserveGuestsSelect.value;
+             if (!checkIn || !checkOut || !guests) { messageElement.textContent = t.bookingInputError; messageElement.classList.add('error'); messageElement.style.display = 'block'; return; }
+             if (new Date(checkOut) <= new Date(checkIn)) { messageElement.textContent = t.bookingDateError; messageElement.classList.add('error'); messageElement.style.display = 'block'; return; }
+             reserveBtn.classList.add('loading'); reserveBtn.disabled = true; reserveBtn.querySelector('span').textContent = ''; // Clear text for loading spinner
+             setTimeout(() => { reserveBtn.classList.remove('loading'); reserveBtn.classList.add('reserved'); reserveBtn.querySelector('span').textContent = t.reserved; messageElement.textContent = t.bookingSuccess; messageElement.classList.add('success'); messageElement.style.display = 'block'; console.log(`Reservation: P${appState.getState().selectedProperty}, ${checkIn} to ${checkOut}, ${guests} guests, by ${appState.getState().userName}`); }, 1500);
+        }
+    }
+
+    // Loading management
+    class LoadingManager { static overlay = DOMUtils.getElement('loadingOverlay'); static showLoading() { this.overlay.classList.add('show'); } static hideLoading() { this.overlay.classList.remove('show'); } }
+
+    // Event handlers
+    class EventHandlers {
+         static init() {
+             DOMUtils.getElement('searchForm').addEventListener('submit', this.handleSearchSubmit);
+             DOMUtils.getElement('loginBtn').addEventListener('click', this.handleLoginClick);
+             DOMUtils.getElement('signupBtn').addEventListener('click', this.handleSignupClick);
+             DOMUtils.getElement('logoutBtn').addEventListener('click', this.handleLogoutClick);
+             DOMUtils.getElement('clearSearchBtn').addEventListener('click', this.handleClearSearch); // Add clear search listener
+             DOMUtils.getElement('locationInput').addEventListener('input', this.handleLocationInput); // Listener to show/hide clear button
+             DOMUtils.getElement('sortOptions').addEventListener('change', this.handleSortChange); // Add sort listener
+             DOMUtils.getElement('listingsGrid').addEventListener('click', this.handleListingInteraction);
+             DOMUtils.getElement('listingsGrid').addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('listing-card')) { this.handleListingInteraction(e); e.preventDefault(); } });
+             DOMUtils.getElement('backBtn').addEventListener('click', this.handleBackClick);
+             DOMUtils.getElement('reservationForm').addEventListener('submit', FormManager.handleReservationSubmit);
+             DOMUtils.getElement('logoHomeLink').addEventListener('click', this.handleHomeClick);
+             DOMUtils.getElement('homeLink').addEventListener('click', this.handleHomeClick);
+             DOMUtils.getElement('listingsLink').addEventListener('click', this.handleListingsClick);
+             DOMUtils.getElement('contactLink').addEventListener('click', this.handleContactClick);
+             DOMUtils.getElement('ratingStars').addEventListener('click', this.handleStarClick);
+             DOMUtils.getElement('ratingStars').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { this.handleStarClick(e); } });
+             DOMUtils.getElement('galleryThumbnails').addEventListener('click', this.handleThumbnailClick);
+             DOMUtils.getElement('galleryThumbnails').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { this.handleThumbnailClick(e); } });
+             DOMUtils.getElement('lightboxPrev').addEventListener('click', () => ViewManager.navigateLightbox(-1));
+             DOMUtils.getElement('lightboxNext').addEventListener('click', () => ViewManager.navigateLightbox(1));
+             DOMUtils.getElement('lightboxClose').addEventListener('click', ViewManager.closeLightbox);
+             DOMUtils.getElement('languageBtn').addEventListener('click', this.toggleLanguageDropdown);
+             DOMUtils.getElement('languageDropdown').addEventListener('click', this.handleLanguageSelect);
+             document.addEventListener('click', (e) => { if (!e.target.closest('.language-switcher')) { DOMUtils.getElement('languageDropdown').classList.remove('show'); DOMUtils.getElement('languageBtn').setAttribute('aria-expanded', 'false'); } });
+             document.addEventListener('keydown', this.handleGlobalKeyDown);
+             appState.subscribe(ViewManager.updateLoginStateUI);
+         }
+        static handleSearchSubmit(e) { e.preventDefault(); const searchTerm = FormManager.validateSearch(e.target); if (searchTerm) { FormManager.performSearch(searchTerm); } }
+        static handleLoginClick() { ModalManager.openModal(FormManager.createLoginForm(), 'login'); }
+        static handleSignupClick() { ModalManager.openModal(FormManager.createSignupForm(), 'signup'); }
+        static handleLogoutClick() { appState.updateState({ isLoggedIn: false }); ViewManager.showListingsView(); console.log("User logged out"); }
+         static handleLoginSubmit(e) {
+             e.preventDefault(); const email = e.target.email.value; const password = e.target.password.value; const messageDiv = DOMUtils.getElement('loginMessage'); const t = translations[appState.getState().language]; messageDiv.textContent = ''; messageDiv.className = 'modal-message';
+             if (!email || !password) { messageDiv.textContent = t.loginError; messageDiv.classList.add('error'); return; }
+             if (password.length < 6) { messageDiv.textContent = t.loginPasswordError; messageDiv.classList.add('error'); return; }
+             console.log("Simulating login for:", email); const userName = email.split('@')[0]; appState.updateState({ isLoggedIn: true, userName: userName }); messageDiv.textContent = t.loginSuccess; messageDiv.classList.add('success');
+             setTimeout(() => { ModalManager.closeModal(); if (ViewManager.reserveMessage.textContent === t.pleaseLogin) { ViewManager.reserveMessage.textContent = ''; ViewManager.reserveMessage.style.display = 'none'; const reserveButton = DOMUtils.getElement('reserveBtn'); if (reserveButton) reserveButton.click(); } }, 1000);
+         }
+         static handleSignupSubmit(e) {
+             e.preventDefault(); const name = e.target.name.value; const email = e.target.email.value; const password = e.target.password.value; const messageDiv = DOMUtils.getElement('signupMessage'); const t = translations[appState.getState().language]; messageDiv.textContent = ''; messageDiv.className = 'modal-message';
+             if (!name || !email || !password) { messageDiv.textContent = t.signupError; messageDiv.classList.add('error'); return; }
+             const strengthResult = FormManager.checkPasswordStrength(password);
+             if (!strengthResult.allMet) { messageDiv.textContent = t.signupPasswordStrengthError; messageDiv.classList.add('error'); EventHandlers.updatePasswordStrengthUI(DOMUtils.getElement('signupPassword'), strengthResult); return; }
+             console.log("Simulating signup for:", name, email); messageDiv.textContent = t.signupSuccess; messageDiv.classList.add('success');
+             setTimeout(() => { ModalManager.closeModal(); }, 1500);
+         }
+        static handlePasswordInput(e) {
+             const password = e.target.value;
+             const strengthResult = FormManager.checkPasswordStrength(password);
+             EventHandlers.updatePasswordStrengthUI(e.target, strengthResult);
+         }
+        static updatePasswordStrengthUI(inputElement, strengthResult) {
+              const feedbackElement = inputElement.parentElement.querySelector('#passwordStrengthFeedback');
+              const requirementsElement = inputElement.parentElement.querySelector('#passwordRequirementsFeedback');
+              const t = translations[appState.getState().language];
+              if (!feedbackElement || !requirementsElement) return;
+
+              let strengthText = '';
+              if (inputElement.value.length > 0) { strengthText = strengthResult.strength === 'strong' ? t.passwordStrong : (strengthResult.strength === 'medium' ? t.passwordMedium : t.passwordWeak); }
+              feedbackElement.textContent = strengthText;
+              feedbackElement.className = `password-strength-feedback ${inputElement.value.length > 0 ? strengthResult.strength : ''}`;
+
+               // Update detailed requirements display using spans within the translated string
+               const reqMap = { length: strengthResult.requirements.length, uppercase: strengthResult.requirements.uppercase, lowercase: strengthResult.requirements.lowercase, letters: strengthResult.requirements.letters, numberCount: strengthResult.requirements.numberCount, symbol: strengthResult.requirements.symbol };
+               // Use innerHTML carefully, assuming t.passwordRequirements is safe
+               requirementsElement.innerHTML = t.passwordRequirements;
+               requirementsElement.querySelectorAll('span[class^="req-"]').forEach(span => {
+                    const key = span.className.split(' ')[0].replace('req-', '');
+                     if (key in reqMap) {
+                         span.classList.toggle('met', reqMap[key]);
+                         span.classList.toggle('unmet', !reqMap[key]);
+                     }
+                });
+         }
+        static handleListingInteraction(e) {
+             const card = e.target.closest('.listing-card'); if (!card) return;
+             const likeButton = e.target.closest('.like-button');
+             if (likeButton) { e.stopPropagation(); const propertyId = likeButton.dataset.propertyId || card.dataset.id; ViewManager.toggleLike(propertyId, likeButton); }
+             else { const propertyId = card.getAttribute('data-id'); if (propertyId) { ViewManager.showPropertyView(propertyId); } }
+         }
+        static handleBackClick() { ViewManager.showListingsView(); }
+        static handleHomeClick(e) { e.preventDefault(); ViewManager.showListingsView(true); }
+        static handleListingsClick(e) { e.preventDefault(); if (appState.getState().currentView !== 'listings') { ViewManager.showListingsView(false); } DOMUtils.getElement('listings').scrollIntoView({ behavior: 'smooth' }); }
+        static handleContactClick(e) { e.preventDefault(); ViewManager.showContactView(); }
+        static handleStarClick(e) {
+             const starButton = e.target.closest('.star'); if (!starButton) return;
+             const rating = parseInt(starButton.getAttribute('data-rating')); appState.updateState({ userRating: rating }); ViewManager.updateStarRatingDisplay();
+             console.log(`Rated P${appState.getState().selectedProperty} as ${rating} stars`);
+         }
+        static handleThumbnailClick(e) {
+             const thumbnail = e.target.closest('.thumbnail'); if (!thumbnail) return;
+             const index = parseInt(thumbnail.getAttribute('data-index'));
+             if (!isNaN(index)) { const { propertyImages } = appState.getState(); if (propertyImages && propertyImages[index]) { ViewManager.propertyMainImage.src = propertyImages[index]; appState.updateState({ currentImageIndex: index }); DOMUtils.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); thumbnail.classList.add('active'); } }
+         }
+        static toggleLanguageDropdown() { const dropdown = DOMUtils.getElement('languageDropdown'); const button = DOMUtils.getElement('languageBtn'); const isShown = dropdown.classList.toggle('show'); button.setAttribute('aria-expanded', isShown); }
+        static handleLanguageSelect(e) { const option = e.target.closest('.language-option'); if (!option) return; const lang = option.getAttribute('data-lang'); ViewManager.toggleLanguage(lang); DOMUtils.getElement('languageDropdown').classList.remove('show'); DOMUtils.getElement('languageBtn').setAttribute('aria-expanded', 'false'); }
+        static handleGlobalKeyDown(e) { if (e.key === 'Escape') { if (appState.getState().modal.isOpen) { ModalManager.closeModal(); } else if (DOMUtils.getElement('lightbox').style.display === 'flex') { ViewManager.closeLightbox(); } } }
+         // Handler for the clear search button
+         static handleClearSearch() {
+             ViewManager.locationInput.value = ''; // Clear the input
+             ViewManager.clearSearchBtn.style.display = 'none'; // Hide the button
+             appState.updateState({ currentFilter: '' }); // Reset filter state
+             ViewManager.renderListings(); // Re-render all listings with default sort
+             if(ViewManager.sortOptionsSelect) ViewManager.sortOptionsSelect.value = 'default'; // Reset sort dropdown UI
+         }
+          // Handler to show/hide clear search button based on input
+         static handleLocationInput() {
+             if (ViewManager.locationInput.value.length > 0) {
+                 ViewManager.clearSearchBtn.style.display = 'block';
+             } else {
+                 ViewManager.clearSearchBtn.style.display = 'none';
+             }
+         }
+         // Handler for sorting change
+         static handleSortChange(e) {
+            const newSortOrder = e.target.value;
+            appState.updateState({ sortOrder: newSortOrder });
+            // Re-render listings with the new sort order
+            // Check if there's a current filter active
+            const currentFilter = appState.getState().currentFilter;
+            let propertiesToRender = null;
+            if (currentFilter) {
+                propertiesToRender = Object.values(properties).filter(prop =>
+                    prop.location.toLowerCase().includes(currentFilter.toLowerCase()) ||
+                    prop.title.toLowerCase().includes(currentFilter.toLowerCase())
+                );
+            }
+            ViewManager.renderListings(propertiesToRender, newSortOrder);
+        }
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', () => {
+        DOMUtils.getElement('currentYear').textContent = new Date().getFullYear();
+        ViewManager.init(); // Caches elements
+        ModalManager.init();
+        EventHandlers.init(); // Sets up listeners
+        ViewManager.updateLoginStateUI(appState.getState());
+        ViewManager.toggleLanguage(appState.getState().language); // Apply initial language and translations
+        ViewManager.showListingsView(); // Initial render
+    });
+</script>
+</body>
+</html>
+```

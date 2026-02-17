@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Rentals</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --accent-color: #000; /* Black accent color */
+            --highlight-color: #333; /* Dark gray highlight color */
+            --text-color: #000; /* Black text color */
+            --background-color: #fff; /* White background color */
+            --primary-color: #D3D3D3; /* Grey color for header */
+            --hover-color: #ddd; /* Light gray hover color */
+            --button-color: #FF385C; /* Orange button color */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color); /* Black text */
+        }
+
+        header {
+            background-color: var(--primary-color); /* Grey */
+            color: var(--text-color);
+            padding: 20px 0;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        header nav a {
+            margin: 0 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header button {
+            background: var(--button-color); /* Orange color */
+            color: var(--text-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        header button:hover {
+            background: var(--highlight-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('hero-background.jpg') no-repeat center center/cover;
+            padding: 80px 0;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-bar input,
+        .search-bar select,
+        .search-bar button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .search-bar button {
+            background: var(--button-color); /* Orange button color */
+            color: var(--text-color);
+        }
+
+        .search-bar button:hover {
+            background: var(--highlight-color);
+        }
+
+        /* Featured Listings */
+        .featured-listings {
+            padding: 40px 0;
+        }
+
+        .featured-listings .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .featured-listings h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px; /* Added more space between the listings */
+            justify-items: center;
+        }
+
+        /* Listing Card */
+        .listing-card {
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .listing-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .listing-card h3 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .listing-card .price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .listing-card p {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .modal-content .close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr); /* 3 columns on smaller screens */
+                gap: 20px; /* Adjust gap for smaller screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+                gap: 20px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-bar input,
+            .search-bar select,
+            .search-bar button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Back to Top Button */
+        #backToTop {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Social Media Links */
+        .social-media {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .social-media a {
+            margin: 0 10px;
+        }
+
+        .social-media img {
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Gojo Rentals</h1>
+            <nav>
+                <a href="#home">Home</a>
+                <a href="#listings">Listings</a>
+                <a href="#contact" id="contactLink">Contact</a>
+                <button id="loginBtn">Login</button>
+                <button id="signupBtn">Sign Up</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h2>Find Your Dream Home</h2>
+            <p>Explore thousands of rental homes and connect with sellers directly.</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for homes...">
+                <select>
+                    <option value="">Sort By</option>
+                    <option value="villa">Villa</option>
+                    <option value="mansion">Mansion</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="location">Location</option>
+                    <option value="price">Price</option>
+                </select>
+                <button>Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Listings Section -->
+    <section id="listings" class="featured-listings">
+        <div class="container">
+            <h2>Featured Listings</h2>
+            <div class="grid">
+                <!-- Listing Cards (Duplicated 4 times) -->
+                <div class="listing-card">
+                    <img src="p.1.jpg" alt="Cozy Apartment in Addis Ababa">
+                    <h3>Cozy Apartment in Addis Ababa</h3>
+                    <p class="price">5000 ETB/month</p>
+                    <p>A beautiful apartment in the heart of the city, perfect for small families or professionals.</p>
+                </div>
+                <div class="listing-card">
+                    <img src="p.2.jpg" alt="Modern House in Addis Ababa">
+                    <h3>Modern House in Addis Ababa</h3>
+                    <p class="price">12000 ETB/month</p>
+                    <p>A luxurious house with modern amenities, ideal for large families or business professionals.</p>
+                </div>
+                <div class="listing-card">
+                    <img src="p.3.jpg" alt="Luxury Apartment in Addis Ababa">
+                    <h3>Luxury Apartment in Addis Ababa</h3>
+                    <p class="price">9000 ETB/month</p>
+                    <p>Experience the height of luxury with this elegant apartment offering stunning views.</p>
+                </div>
+                <div class="listing-card" style="margin-top: 40px;">
+                    <img src="p.4.jpg" alt="Spacious House in Addis Ababa">
+                    <h3>Spacious House in Addis Ababa</h3>
+                    <p class="price">15000 ETB/month</p>
+                    <p>A spacious and beautifully designed house perfect for families and events.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop">↑</button>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Gojo Rentals. All rights reserved.</p>
+            <div class="social-media">
+                <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
+                <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll functionality for the back-to-top button
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById('backToTop').style.display = 'block';
+            } else {
+                document.getElementById('backToTop').style.display = 'none';
+            }
+        };
+
+        document.getElementById('backToTop').addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

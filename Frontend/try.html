@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Rentals - Vacation Rentals, Cabins, Beach Houses & More</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --airbnb-pink: #FF385C;
+            --airbnb-dark: #000000;
+            --airbnb-light-gray: #EBEBEB;
+        }
+        
+        .hero-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .category-item:hover .category-icon {
+            transform: scale(1.1);
+            border-color: var(--airbnb-pink);
+        }
+        
+        .search-bar {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 9999px;
+        }
+        
+        .filter-btn:hover {
+            border-color: #DDDDDD;
+        }
+        
+        .heart-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .heart-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .heart-icon.favorited {
+            color: var(--airbnb-pink);
+        }
+        
+        .price-tag {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .date-picker {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 50;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            margin-top: 10px;
+        }
+        
+        .nav-link:hover {
+            background-color: #F7F7F7;
+            border-radius: 22px;
+        }
+        
+        .active-filter {
+            border-color: var(--airbnb-dark) !important;
+            background-color: #F7F7F7;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-home text-[var(--airbnb-pink)] text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-[var(--airbnb-pink)]">Gojo Rentals</span>
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex mx-4 flex-1 max-w-xl">
+                    <div class="search-bar bg-white border border-gray-200 rounded-full p-2 flex items-center w-full">
+                        <div class="px-4 border-r border-gray-300">
+                            <span class="font-medium text-sm">Anywhere</span>
+                        </div>
+                        <div class="px-4 border-r border-gray-300">
+                            <span class="font-medium text-sm">Any week</span>
+                        </div>
+                        <div class="px-4 flex items-center">
+                            <span class="text-gray-500 text-sm mr-2">Add guests</span>
+                            <div class="bg-[var(--airbnb-pink)] p-2 rounded-full">
+                                <i class="fas fa-search text-white text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex md:items-center md:space-x-4">
+                    <a href="#" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium nav-link">Become a Host</a>
+                    <div class="ml-3 relative">
+                        <div class="flex items-center space-x-2 border border-gray-300 rounded-full p-2 px-4 cursor-pointer hover:shadow-md">
+                            <i class="fas fa-bars text-gray-500"></i>
+                            <div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="bg-gray-100 p-2 rounded-full">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filters -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200">
+        <div class="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-igloo text-gray-700 mb-1"></i>
+                <span class="text-xs">Mansions</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-umbrella-beach text-gray-700 mb-1"></i>
+                <span class="text-xs">Beach</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-swimming-pool text-gray-700 mb-1"></i>
+                <span class="text-xs">Amazing pools</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-campground text-gray-700 mb-1"></i>
+                <span class="text-xs">Camping</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-snowflake text-gray-700 mb-1"></i>
+                <span class="text-xs">Arctic</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-island-tropical text-gray-700 mb-1"></i>
+                <span class="text-xs">Tropical</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-city text-gray-700 mb-1"></i>
+                <span class="text-xs">City</span>
+            </button>
+            <button class="filter-btn flex flex-col items-center justify-center border-b-2 border-transparent pb-2 px-1 whitespace-nowrap">
+                <i class="fas fa-chess-rook text-gray-700 mb-1"></i>
+                <span class="text-xs">Castles</span>
+            </button>
+            <button class="filter-btn flex items-center justify-center border border-gray-300 rounded-full px-4 py-1 whitespace-nowrap ml-2">
+                <i class="fas fa-sliders-h text-gray-700 mr-2"></i>
+                <span class="text-xs">Filters</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Property Listings -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Property 1 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Modern house" class="w-full h-full object-cover">
+                    <div class="price-tag">$120 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Modern house in Tokyo</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.92</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">2,500 miles away</p>
+                    <p class="text-gray-500 text-sm">Jun 1-6</p>
+                </div>
+            </div>
+            
+            <!-- Property 2 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Cabin in woods" class="w-full h-full object-cover">
+                    <div class="price-tag">$95 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Cozy cabin in the woods</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.85</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">800 miles away</p>
+                    <p class="text-gray-500 text-sm">May 15-20</p>
+                </div>
+            </div>
+            
+            <!-- Property 3 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Beachfront villa" class="w-full h-full object-cover">
+                    <div class="price-tag">$250 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Beachfront villa in Bali</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.98</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">5,000 miles away</p>
+                    <p class="text-gray-500 text-sm">Jul 10-17</p>
+                </div>
+            </div>
+            
+            <!-- Property 4 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Modern apartment" class="w-full h-full object-cover">
+                    <div class="price-tag">$180 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Modern apartment in NYC</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.79</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">200 miles away</p>
+                    <p class="text-gray-500 text-sm">Aug 5-10</p>
+                </div>
+            </div>
+            
+            <!-- Property 5 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Luxury villa" class="w-full h-full object-cover">
+                    <div class="price-tag">$320 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Luxury villa in Miami</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.91</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">1,200 miles away</p>
+                    <p class="text-gray-500 text-sm">Sep 12-18</p>
+                </div>
+            </div>
+            
+            <!-- Property 6 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Countryside house" class="w-full h-full object-cover">
+                    <div class="price-tag">$150 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Countryside house in Tuscany</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.87</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">4,300 miles away</p>
+                    <p class="text-gray-500 text-sm">Oct 5-12</p>
+                </div>
+            </div>
+            
+            <!-- Property 7 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Ski chalet" class="w-full h-full object-cover">
+                    <div class="price-tag">$210 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Ski chalet in Aspen</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.93</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">1,800 miles away</p>
+                    <p class="text-gray-500 text-sm">Dec 15-22</p>
+                </div>
+            </div>
+            
+            <!-- Property 8 -->
+            <div class="property-card bg-white rounded-xl overflow-hidden transition duration-300 cursor-pointer relative">
+                <div class="heart-icon" onclick="toggleFavorite(this)"><i class="far fa-heart"></i></div>
+                <div class="h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1600607688969-a5bfcd646554?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                         alt="Lakefront cottage" class="w-full h-full object-cover">
+                    <div class="price-tag">$135 night</div>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-semibold">Lakefront cottage in Maine</h3>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-[var(--airbnb-pink)] mr-1"></i>
+                            <span>4.89</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">600 miles away</p>
+                    <p class="text-gray-500 text-sm">Jul 22-29</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <button class="border border-gray-800 rounded-lg px-6 py-3 font-medium hover:bg-gray-100 transition duration-300">
+                Show all (200+) properties
+            </button>
+        </div>
+    </div>
+
+    <!-- Map View Toggle -->
+    <div class="fixed bottom-8 right-8 z-40">
+        <button class="bg-black text-white rounded-full p-3 shadow-lg hover:bg-gray-800 transition duration-300 flex items-center" onclick="toggleMapView()">
+            <i class="fas fa-map mr-2"></i>
+            <span>Show map</span>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Support</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Help Center</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Safety information</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Cancellation options</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Community</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Disaster relief</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Support refugees</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Combating discrimination</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Hosting</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Try hosting</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">AirCover for Hosts</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Explore hosting resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Gojo Rentals</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Newsroom</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Careers</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-[var(--airbnb-pink)]">Investors</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-[var(--airbnb-pink)]">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-[var(--airbnb-pink)]">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-[var(--airbnb-pink)]">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+                <div class="text-sm text-gray-500">
+                    © 2023 Gojo Rentals, Inc. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="fixed inset-0 bg-white z-50 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center mb-8">
+                <button onclick="closeSearchModal()" class="p-2 rounded-full hover:bg-gray-100">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <button class="bg-[var(--airbnb-pink)] text-white px-6 py-2 rounded-full font-medium">
+                    Search
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="border-b border-gray-300 pb-2">
+                    <h3 class="text-xs font-bold">WHERE</h3>
+                    <input type="text" placeholder="Search destinations" class="w-full focus:outline-none mt-1">
+                </div>
+                <div class="border-b border-gray-300 pb-2">
+                    <h3 class="text-xs font-bold">CHECK IN</h3>
+                    <input type="text" placeholder="Add dates" class="w-full focus:outline-none mt-1">
+                </div>
+                <div class="border-b border-gray-300 pb-2">
+                    <h3 class="text-xs font-bold">CHECK OUT</h3>
+                    <input type="text" placeholder="Add dates" class="w-full focus:outline-none mt-1">
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4">When you're traveling</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="border border-gray-300 rounded-lg p-4 text-left hover:border-gray-900">
+                        <h4 class="font-medium">I'm flexible</h4>
+                        <p class="text-sm text-gray-500 mt-1">Choose your dates</p>
+                    </button>
+                    <button class="border border-gray-300 rounded-lg p-4 text-left hover:border-gray-900">
+                        <h4 class="font-medium">June 1-6</h4>
+                        <p class="text-sm text-gray-500 mt-1">Next month</p>
+                    </button>
+                    <button class="border border-gray-300 rounded-lg p-4 text-left hover:border-gray-900">
+                        <h4 class="font-medium">July 10-17</h4>
+                        <p class="text-sm text-gray-500 mt-1">Summer getaway</p>
+                    </button>
+                    <button class="border border-gray-300 rounded-lg p-4 text-left hover:border-gray-900">
+                        <h4 class="font-medium">Aug 5-10</h4>
+                        <p class="text-sm text-gray-500 mt-1">Weekend trip</p>
+                    </button>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Who's coming?</h3>
+                <div class="flex items-center justify-between border-b border-gray-300 pb-4">
+                    <div>
+                        <h4 class="font-medium">Adults</h4>
+                        <p class="text-sm text-gray-500">Ages 13+</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">-</button>
+                        <span>1</span>
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">+</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between border-b border-gray-300 py-4">
+                    <div>
+                        <h4 class="font-medium">Children</h4>
+                        <p class="text-sm text-gray-500">Ages 2-12</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">-</button>
+                        <span>0</span>
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">+</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between pt-4">
+                    <div>
+                        <h4 class="font-medium">Infants</h4>
+                        <p class="text-sm text-gray-500">Under 2</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">-</button>
+                        <span>0</span>
+                        <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle favorite heart icon
+        function toggleFavorite(element) {
+            const icon = element.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas', 'favorited');
+            } else {
+                icon.classList.remove('fas', 'favorited');
+                icon.classList.add('far');
+            }
+        }
+        
+        // Toggle map view
+        function toggleMapView() {
+            alert('Map view would be displayed here in a real implementation');
+        }
+        
+        // Filter buttons functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active-filter');
+                        b.classList.remove('border-b-2', 'border-[var(--airbnb-dark)]');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active-filter');
+                    this.classList.add('border-b-2', 'border-[var(--airbnb-dark)]');
+                });
+            });
+            
+            // Mobile search bar click
+            const mobileSearchBar = document.querySelector('.search-bar');
+            if (mobileSearchBar) {
+                mobileSearchBar.addEventListener('click', function() {
+                    document.getElementById('searchModal').classList.remove('hidden');
+                });
+            }
+        });
+        
+        // Open search modal
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.remove('hidden');
+        }
+        
+        // Close search modal
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+        
+        // Show date picker when date input is clicked
+        function showDatePicker(element) {
+            const datePicker = document.createElement('div');
+            datePicker.className = 'date-picker';
+            datePicker.innerHTML = `
+                <div class="flex justify-between mb-4">
+                    <button><i class="fas fa-chevron-left"></i></button>
+                    <h3 class="font-medium">June 2023</h3>
+                    <button><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="grid grid-cols-7 gap-2">
+                    <div class="text-center text-gray-400 text-sm">Su</div>
+                    <div class="text-center text-gray-400 text-sm">Mo</div>
+                    <div class="text-center text-gray-400 text-sm">Tu</div>
+                    <div class="text-center text-gray-400 text-sm">We</div>
+                    <div class="text-center text-gray-400 text-sm">Th</div>
+                    <div class="text-center text-gray-400 text-sm">Fr</div>
+                    <div class="text-center text-gray-400 text-sm">Sa</div>
+                    
+                    ${Array.from({length: 30}, (_, i) => 
+                        `<div class="text-center p-2 rounded-full ${i === 0 ? 'bg-[var(--airbnb-pink)] text-white' : ''}">${i+1}</div>`
+                    ).join('')}
+                </div>
+            `;
+            
+            element.parentNode.appendChild(datePicker);
+            
+            // Close when clicking outside
+            document.addEventListener('click', function closePicker(e) {
+                if (!element.contains(e.target) && !datePicker.contains(e.target)) {
+                    datePicker.remove();
+                    document.removeEventListener('click', closePicker);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

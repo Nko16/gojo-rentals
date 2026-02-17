@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gojo Rentals | Secure Access Portal</title>
+    <style>
+        :root {
+            /* --- Font Configuration --- */
+            /* 1. Replace '--font-family-primary-name' with the EXACT name of your font */
+            /*    (e.g., 'Inter', 'Poppins', 'Your Custom Font Name'). */
+            /* 2. Provide standard fallbacks in '--font-family-fallback'. */
+            /* 3. Add your @font-face rules or <link> tag for your font below. */
+            --font-family-primary-name: 'Your Font Name'; /* <<< CHANGE THIS */
+            --font-family-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-family-primary: var(--font-family-primary-name), var(--font-family-fallback);
+
+            /* --- Color Palette (Keep or Adjust) --- */
+            --brand-primary: #FF385C;
+            --brand-primary-dark: #D90B63;
+            --brand-secondary: #00A699;
+            --text-color-base: #222222;
+            --text-color-secondary: #484848;
+            --text-color-muted: #717171;
+            --text-color-on-brand: #FFFFFF;
+            --surface-background: #FFFFFF;
+            --app-background: #F7F7F7;
+            --border-color-light: #EBEBEB;
+            --border-color-default: #DDDDDD;
+            --border-color-strong: #B0B0B0;
+            --feedback-success-bg: #D4EDDA;
+            --feedback-success-text: #155724;
+            --feedback-error-bg: #F8D7DA;
+            --feedback-error-text: #721C24;
+            --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+            --input-height-main: 58px; --button-height-main: 50px;
+            --strength-color-0: #E74C3C; --strength-color-1: #E74C3C; --strength-color-2: #F39C12;
+            --strength-color-3: #F1C40F; --strength-color-4: #2ECC71; --strength-color-5: var(--brand-secondary);
+            --strength-color-6: var(--brand-secondary);
+        }
+
+        /* --- Font Loading --- */
+        /* Remove or comment out the @font-face rules below if you are: */
+        /* a) Using a web font service (like Google Fonts) - add the <link> tag in the <head> instead. */
+        /* b) Using a different font entirely. */
+
+        /* --- PLACE YOUR @font-face RULES OR FONT <link> TAG HERE --- */
+        /* Example using Google Fonts (add this in <head> instead of @font-face):
+           <link rel="preconnect" href="https://fonts.googleapis.com">
+           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+           And then set --font-family-primary-name: 'Inter';
+        */
+
+        /* --- Base & Layout Styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+        body {
+            /* Use the configured font */
+            font-family: var(--font-family-primary);
+            background-color: var(--app-background);
+            color: var(--text-color-base);
+            line-height: 1.5;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        .auth-dialog-container {
+            background-color: var(--surface-background);
+            border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+            width: 100%; max-width: 500px;
+            overflow: hidden;
+            transform: scale(0.95); opacity: 0;
+            animation: dialogAppear 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        @keyframes dialogAppear { to { transform: scale(1); opacity: 1; } }
+
+        .dialog-header { padding: 24px; border-bottom: 1px solid var(--border-color-light); text-align: center; }
+        .dialog-header .title { font-size: 1.25rem; font-weight: 700; } /* Adjust weight if needed for your font */
+        .dialog-body { padding: 24px 32px 32px; }
+
+        .brand-info { text-align: center; margin-bottom: 32px; }
+        .brand-info .logo-text {
+            font-size: 2.25rem; font-weight: 900; color: var(--brand-primary); /* Adjust weight if needed */
+            letter-spacing: -0.5px; margin-bottom: 8px;
+        }
+        .brand-info .tagline { font-size: 1rem; color: var(--text-color-secondary); font-weight: 500; } /* Adjust weight */
+
+        .form-block { display: none; opacity: 0; transition: opacity 0.3s ease-out; }
+        .form-block.active { display: block; opacity: 1; }
+
+        .input-field-group { margin-bottom: 18px; position: relative; }
+        .input-field-group .label-text {
+            font-size: 0.75rem; font-weight: 500; color: var(--text-color-muted); /* Adjust weight */
+            padding: 0 4px; background-color: var(--surface-background);
+            position: absolute; top: -7px; left: 12px;
+            transition: all 0.2s ease-out;
+            opacity: 0; transform: translateY(5px); pointer-events: none; /* Prevent label blocking input */
+        }
+        .input-field-group .input-control:focus ~ .label-text,
+        .input-field-group .input-control:not(:placeholder-shown) ~ .label-text {
+            opacity: 1; transform: translateY(0);
+        }
+
+        .input-control {
+            width: 100%; height: var(--input-height-main);
+            padding: 16px; padding-right: 16px; /* Default padding */
+            border: 1px solid var(--border-color-default); border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: var(--font-family-primary); /* Use configured font */
+            color: var(--text-color-base); background-color: var(--surface-background);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-control[type="password"] { padding-right: 55px; }
+        .input-control::placeholder { color: var(--text-color-muted); font-weight: 400; opacity: 1; } /* Ensure placeholder is visible */
+        .input-control:focus {
+            outline: none; border-color: var(--border-color-strong);
+            box-shadow: 0 0 0 1px var(--border-color-strong);
+        }
+        /* Use ARIA attribute for invalid state styling */
+        .input-control[aria-invalid="true"] { border-color: var(--brand-primary); box-shadow: 0 0 0 1px var(--brand-primary); }
+        .input-control.valid { border-color: var(--brand-secondary); } /* Keep valid visual */
+
+        .password-input-wrapper { position: relative; }
+        .toggle-password-visibility {
+            background: none; border: none; color: var(--text-color-muted);
+            font-size: 0.875rem; font-weight: 700; cursor: pointer; /* Adjust weight */
+            position: absolute; top: 50%; right: 10px;
+            transform: translateY(-50%); padding: 10px;
+        }
+        .toggle-password-visibility:hover,
+        .toggle-password-visibility:focus-visible { color: var(--text-color-base); outline: none; }
+
+        .field-feedback {
+            font-size: 0.8rem; margin-top: 4px; padding-left: 2px; display: none;
+            color: var(--brand-primary); /* Error color */
+        }
+        /* Show feedback when linked by aria-describedby */
+        .input-control[aria-invalid="true"] + .field-feedback, /* Direct sibling */
+        .input-control[aria-invalid="true"] ~ .field-feedback, /* General sibling */
+        .password-input-wrapper .input-control[aria-invalid="true"] ~ .field-feedback { /* Inside wrapper */
+             display: block;
+        }
+        /* Special case for password structure */
+         .input-field-group > .password-input-wrapper + .field-feedback.error {
+             display: none; /* Hide the general one if the specific password one exists */
+         }
+         #signup-password-field-feedback.error { display: none; } /* Hide specific initially */
+         .input-control#signup-password[aria-invalid="true"] ~ #signup-password-field-feedback.error {
+            display: block; /* Show specific password error */
+         }
+
+
+        .password-strength-section { margin-top: 6px; margin-bottom: 12px; }
+        .strength-bar-container { height: 6px; background-color: var(--border-color-light); border-radius: var(--radius-sm); overflow: hidden; }
+        .strength-bar { height: 100%; width: 0%; border-radius: var(--radius-sm); transition: width 0.3s ease, background-color 0.3s ease; }
+        .strength-text-feedback {
+            font-size: 0.75rem; color: var(--text-color-muted);
+            margin-top: 4px; min-height: 1.2em; font-weight: 500; /* Adjust weight */
+        }
+        .strength-bar.strength-0 { background-color: var(--strength-color-0); }
+        .strength-bar.strength-1 { background-color: var(--strength-color-1); }
+        .strength-bar.strength-2 { background-color: var(--strength-color-2); }
+        .strength-bar.strength-3 { background-color: var(--strength-color-3); }
+        .strength-bar.strength-4 { background-color: var(--strength-color-4); }
+        .strength-bar.strength-5 { background-color: var(--strength-color-5); }
+        .strength-bar.strength-6 { background-color: var(--strength-color-6); }
+
+
+        .action-button {
+            background: var(--brand-primary); color: var(--text-color-on-brand);
+            height: var(--button-height-main); border: none; border-radius: var(--radius-md);
+            font-size: 1rem; font-weight: 700; width: 100%; cursor: pointer; /* Adjust weight */
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 16px; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-family-primary); /* Use configured font */
+        }
+        .action-button:hover { background: var(--brand-primary-dark); }
+        .action-button:active { transform: scale(0.98); }
+        .action-button:focus-visible { outline: 2px solid var(--brand-primary-dark); outline-offset: 2px; }
+
+        .form-switch-prompt { margin-top: 20px; font-size: 0.9rem; text-align: center; color: var(--text-color-base); }
+        .form-switch-prompt .switch-link { color: var(--brand-primary); font-weight: 700; text-decoration: none; } /* Adjust weight */
+        .form-switch-prompt .switch-link:hover,
+        .form-switch-prompt .switch-link:focus-visible { text-decoration: underline; outline: none; }
+
+        .global-message-display {
+            padding: 12px 16px; border-radius: var(--radius-md);
+            font-size: 0.9rem; font-weight: 500; /* Adjust weight */
+            margin-bottom: 16px; text-align: center; display: none;
+             /* Ensure screen readers pick it up */
+            aria-live: assertive; /* Changed from polite for errors */
+        }
+        .global-message-display.success {
+            background-color: var(--feedback-success-bg); color: var(--feedback-success-text);
+            border: 1px solid var(--brand-secondary); display: block;
+             aria-live: polite; /* Polite for success */
+        }
+        .global-message-display.error {
+            background-color: var(--feedback-error-bg); color: var(--feedback-error-text);
+            border: 1px solid var(--brand-primary); display: block;
+             aria-live: assertive; /* Assertive for errors */
+        }
+
+        .terms-notice { font-size: 0.75rem; color: var(--text-color-muted); text-align: center; margin-top: 16px; line-height: 1.4; }
+        .terms-notice a { color: var(--text-color-secondary); text-decoration: underline; font-weight: 500; } /* Adjust weight */
+        .terms-notice a:focus-visible { outline: 1px dotted var(--text-color-secondary); outline-offset: 2px;}
+
+
+        .social-login-divider { display: flex; align-items: center; text-align: center; color: var(--text-color-muted); font-size: 0.8rem; font-weight: 500; margin: 24px 0; } /* Adjust weight */
+        .social-login-divider::before, .social-login-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color-light); }
+        .social-login-divider:not(:empty)::before { margin-right: .5em; }
+        .social-login-divider:not(:empty)::after { margin-left: .5em; }
+
+        .social-login-buttons .social-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 48px; border: 1px solid var(--border-color-default); border-radius: var(--radius-md);
+            background-color: var(--surface-background); color: var(--text-color-base);
+            font-family: var(--font-family-primary); /* Use configured font */
+            font-size: 0.9rem; font-weight: 500; /* Adjust weight */
+            cursor: pointer; text-decoration: none; margin-bottom: 12px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .social-login-buttons .social-btn:hover { border-color: var(--border-color-strong); background-color: #f9f9f9; }
+        .social-login-buttons .social-btn:focus-visible { border-color: var(--border-color-strong); outline: 1px solid var(--border-color-strong); outline-offset: 1px; }
+        .social-login-buttons .social-btn .icon { width: 20px; height: 20px; margin-right: 10px; display: inline-block; font-weight: bold; font-size: 1.1em; line-height: 1; text-align: center; }
+        .icon-google::before { content: 'G'; color: #DB4437; }
+        .icon-facebook::before { content: 'f'; color: #4267B2; }
+        .icon-apple::before { content: ''; color: #000000; font-size: 1.3em; }
+
+        /* --- Compact Signup Styles (Using ID for JS targeting is okay, avoid over-styling with ID) --- */
+        #signup-form-block .input-field-group { margin-bottom: 14px; }
+        #signup-form-block .password-strength-section { margin-top: 4px; margin-bottom: 8px; }
+        #signup-form-block .strength-text-feedback { margin-top: 2px; font-size: 0.7rem; }
+        #signup-form-block .terms-notice { margin-top: 12px; font-size: 0.7rem; }
+        #signup-form-block .social-login-divider { margin: 20px 0; }
+        #signup-form-block .social-login-buttons .social-btn { margin-bottom: 10px; height: 44px; }
+        #signup-form-block .form-switch-prompt { margin-top: 16px; }
+
+    </style>
+</head>
+<body>
+    <div class="auth-dialog-container">
+        <header class="dialog-header">
+            <h2 class="title" id="auth-dialog-title">Log in or sign up</h2>
+        </header>
+
+        <main class="dialog-body">
+            <div class="brand-info">
+                <div class="logo-text">Gojo Rentals</div>
+                <p class="tagline" id="auth-dialog-tagline">Your key to premium stays.</p>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div id="login-form-block" class="form-block active">
+                <form id="login-form" novalidate>
+                    <!-- Global messages will be announced by screen readers -->
+                    <div id="login-global-msg" class="global-message-display" role="alert"></div>
+                    <div class="input-field-group">
+                        <input type="text" id="login-identifier" name="identifier" class="input-control" required placeholder="Email or Username" aria-describedby="login-identifier-error">
+                        <label for="login-identifier" class="label-text">Email or Username</label>
+                        <div id="login-identifier-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <div class="password-input-wrapper">
+                            <input type="password" id="login-password" name="password" class="input-control" required placeholder="Password" aria-describedby="login-password-error">
+                            <label for="login-password" class="label-text">Password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="login-password" aria-label="Show password">Show</button>
+                        </div>
+                        <!-- Separate error div linked via aria-describedby -->
+                        <div id="login-password-error" class="field-feedback error"></div>
+                    </div>
+                    <button type="submit" class="action-button">Continue</button>
+                </form>
+                <div class="social-login-divider">OR</div>
+                <div class="social-login-buttons">
+                     <button type="button" class="social-btn" id="google-login-btn"><span class="icon icon-google"></span>Continue with Google</button>
+                     <button type="button" class="social-btn" id="facebook-login-btn"><span class="icon icon-facebook"></span>Continue with Facebook</button>
+                     <button type="button" class="social-btn" id="apple-login-btn"><span class="icon icon-apple"></span>Continue with Apple</button>
+                </div>
+                <p class="form-switch-prompt">
+                    New to Gojo Rentals? <a href="#" id="switch-to-signup" class="switch-link">Sign up</a>
+                </p>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signup-form-block" class="form-block">
+                <form id="signup-form" novalidate>
+                     <!-- Global messages will be announced by screen readers -->
+                     <div id="signup-global-msg" class="global-message-display" role="alert"></div>
+                    <div class="input-field-group">
+                        <input type="text" id="signup-username" name="username" class="input-control" required minlength="3" placeholder="Username" aria-describedby="signup-username-error">
+                        <label for="signup-username" class="label-text">Username</label>
+                        <div id="signup-username-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <input type="email" id="signup-email" name="email" class="input-control" required placeholder="Email address" aria-describedby="signup-email-error">
+                        <label for="signup-email" class="label-text">Email address</label>
+                        <div id="signup-email-error" class="field-feedback error"></div>
+                    </div>
+                    <div class="input-field-group">
+                        <div class="password-input-wrapper">
+                            <input type="password" id="signup-password" name="password" class="input-control" required minlength="8" placeholder="Create password" aria-describedby="signup-password-field-feedback">
+                            <label for="signup-password" class="label-text">Create password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="signup-password" aria-label="Show password">Show</button>
+                        </div>
+                        <div class="password-strength-section">
+                            <div class="strength-bar-container" aria-hidden="true"> <!-- Hide visual bar from SR -->
+                                <div class="strength-bar" id="password-strength-indicator-bar"></div>
+                            </div>
+                            <!-- Announce strength advice changes -->
+                            <div class="strength-text-feedback" id="password-strength-advice" aria-live="polite"></div>
+                        </div>
+                         <!-- Specific password error div linked via aria-describedby -->
+                        <div class="field-feedback error" id="signup-password-field-feedback"></div>
+                    </div>
+                    <div class="input-field-group">
+                         <div class="password-input-wrapper">
+                            <input type="password" id="signup-confirm-password" name="confirm_password" class="input-control" required placeholder="Confirm password" aria-describedby="signup-confirm-password-error">
+                            <label for="signup-confirm-password" class="label-text">Confirm password</label>
+                            <button type="button" class="toggle-password-visibility" data-target="signup-confirm-password" aria-label="Show password">Show</button>
+                        </div>
+                        <div id="signup-confirm-password-error" class="field-feedback error"></div>
+                    </div>
+                    <button type="submit" class="action-button">Agree & Continue</button>
+                    <p class="terms-notice">
+                        By selecting Agree & Continue, I agree to Gojo Rentals'
+                        <a href="#">Terms of Service</a>, <a href="#">Payments Terms of Service</a>, and
+                        <a href="#">Nondiscrimination Policy</a> and acknowledge the <a href="#">Privacy Policy</a>.
+                    </p>
+                </form>
+                 <div class="social-login-divider">OR</div>
+                <div class="social-login-buttons">
+                    <button type="button" class="social-btn" id="google-signup-btn"><span class="icon icon-google"></span>Continue with Google</button>
+                    <button type="button" class="social-btn" id="facebook-signup-btn"><span class="icon icon-facebook"></span>Continue with Facebook</button>
+                    <button type="button" class="social-btn" id="apple-signup-btn"><span class="icon icon-apple"></span>Continue with Apple</button>
+                </div>
+                <p class="form-switch-prompt">
+                    Already have an account? <a href="#" id="switch-to-login" class="switch-link">Log in</a>
+                </p>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Element References ---
+    const loginBlock = document.getElementById('login-form-block');
+    const signupBlock = document.getElementById('signup-form-block');
+    const switchToSignupLink = document.getElementById('switch-to-signup');
+    const switchToLoginLink = document.getElementById('switch-to-login');
+    const dialogTitleEl = document.getElementById('auth-dialog-title');
+    const dialogTaglineEl = document.getElementById('auth-dialog-tagline');
+    const loginFormEl = document.getElementById('login-form');
+    const signupFormEl = document.getElementById('signup-form');
+    const loginGlobalMsgEl = document.getElementById('login-global-msg');
+    const signupGlobalMsgEl = document.getElementById('signup-global-msg');
+    const signupPasswordEl = document.getElementById('signup-password');
+    const strengthBarEl = document.getElementById('password-strength-indicator-bar');
+    const strengthAdviceEl = document.getElementById('password-strength-advice');
+
+    // --- Constants ---
+    const MSG = {
+        REQUIRED: "This field can't be blank.",
+        EMAIL: "Enter a valid email address.",
+        MINLENGTH: (len) => `Enter at least ${len} characters.`,
+        PASSWORD_MISMATCH: "Passwords don't match.",
+        FIX_ERRORS: 'Please fix the errors below.',
+        CHECK_ERRORS: 'Please check the form for errors.',
+        LOGIN_SUCCESS: 'Login successful (Demo)!',
+        SIGNUP_SUCCESS: 'Account created (Demo)! Please log in.',
+        SOCIAL_CONTINUE: (provider) => `Continuing with ${provider}... (Demo)`
+    };
+
+    // --- Utility Functions ---
+    function displayGlobalMessage(el, message, type) {
+        el.textContent = message;
+        el.className = `global-message-display ${type}`; // 'success' or 'error'
+        // Set role for screen reader announcement priority
+        el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        el.style.display = 'block'; // Ensure it's visible
+    }
+
+    function clearGlobalMessage(el) {
+        el.textContent = '';
+        el.className = 'global-message-display';
+        el.removeAttribute('role');
+        el.style.display = 'none'; // Hide it
+    }
+
+    function setFieldValidity(inputEl, isValid, message = "") {
+        // Find the corresponding error message element using aria-describedby
+        const errorMsgId = inputEl.getAttribute('aria-describedby');
+        const feedbackEl = errorMsgId ? document.getElementById(errorMsgId) : null;
+
+        inputEl.classList.toggle('valid', isValid); // Optional valid class
+        inputEl.setAttribute('aria-invalid', !isValid);
+
+        if (feedbackEl) {
+            feedbackEl.textContent = message;
+            // CSS now handles showing/hiding based on aria-invalid
+        }
+
+        // Clear aria-describedby if valid AND it points to our error field
+        // (Prevents removing it if it describes something else)
+        if (isValid && errorMsgId && feedbackEl) {
+             // Check if the ID contains the input's ID - a convention we use
+            if (errorMsgId.includes(inputEl.id)) {
+                 // No longer described by an error
+                 // inputEl.removeAttribute('aria-describedby'); // Keep describedby for now, CSS hides based on aria-invalid
+            }
+        }
+        // If becoming invalid, ensure it's described by the error message
+        else if (!isValid && errorMsgId && feedbackEl) {
+             // Already set in HTML or should be
+             // inputEl.setAttribute('aria-describedby', errorMsgId);
+        }
+    }
+
+
+    function validateField(inputEl) {
+        let isValid = true;
+        let message = '';
+        const value = inputEl.value.trim();
+
+        if (inputEl.hasAttribute('required') && !value) {
+            isValid = false; message = MSG.REQUIRED;
+        } else if (inputEl.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            isValid = false; message = MSG.EMAIL;
+        } else if (inputEl.hasAttribute('minlength') && value && value.length < parseInt(inputEl.getAttribute('minlength'))) {
+            isValid = false; message = MSG.MINLENGTH(inputEl.getAttribute('minlength'));
+        }
+
+        // Handle confirm password specifically
+        if (inputEl.id === 'signup-confirm-password') {
+            const passwordVal = signupPasswordEl.value.trim();
+            if (value && passwordVal && value !== passwordVal) {
+                 isValid = false; message = MSG.PASSWORD_MISMATCH;
+            } else if (!value && inputEl.hasAttribute('required')) {
+                 isValid = false; message = MSG.REQUIRED; // Re-check required if cleared
+            }
+        }
+
+        setFieldValidity(inputEl, isValid, message);
+        return isValid;
+    }
+
+
+    function validateForm(formEl) {
+        let isFormValid = true;
+        // Validate all controls needing validation within this specific form
+        formEl.querySelectorAll('.input-control[required], .input-control[type="email"], .input-control[minlength]').forEach(input => {
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+
+        // Specific check for password match after individual validations
+        if (formEl.id === 'signup-form') {
+             const password = signupPasswordEl.value.trim();
+             const confirmPasswordEl = document.getElementById('signup-confirm-password');
+             const confirmPassword = confirmPasswordEl.value.trim();
+             if (password && confirmPassword && password !== confirmPassword) {
+                 // Ensure confirm field is marked invalid if mismatch occurs here
+                 setFieldValidity(confirmPasswordEl, false, MSG.PASSWORD_MISMATCH);
+                 isFormValid = false;
+             } else if (confirmPassword && password) {
+                  // If they match now (e.g., after correction), mark confirm as valid
+                  setFieldValidity(confirmPasswordEl, true);
+             }
+        }
+        return isFormValid;
+    }
+
+    function getPasswordStrengthInfo(password) {
+        let score = 0;
+        const advice = [];
+        const minLength = 8;
+
+        if (!password) return { score: 0, advice: ["Enter a password."], barClassName: 'strength-0'};
+
+        const hasCapital = /[A-Z]/.test(password);
+        const lowerCount = (password.match(/[a-z]/g) || []).length;
+        const hasMinThreeLower = lowerCount >= 3;
+        const hasSign = /[^a-zA-Z0-9]/.test(password);
+        const numberCount = (password.match(/[0-9]/g) || []).length;
+        const hasMinFourNumbers = numberCount >= 4;
+        const meetsMinLength = password.length >= minLength;
+
+        // Specific "Excellent" rule first
+        if (hasCapital && hasMinThreeLower && hasSign && hasMinFourNumbers && meetsMinLength) {
+            return { score: 6, advice: ["Excellent password!"], barClassName: 'strength-6' };
+        }
+
+        // General scoring and advice
+        if (!meetsMinLength) advice.push(`Use at least ${minLength} characters.`); else score++;
+        if (!hasCapital) advice.push("Add an uppercase letter."); else score++;
+        if (lowerCount === 0) advice.push("Add lowercase letters."); else if (!hasMinThreeLower) advice.push("Add more lowercase letters (at least 3 total)."); else score++;
+        if (numberCount === 0) advice.push("Add numbers."); else if (!hasMinFourNumbers) advice.push("Add more numbers (at least 4 total)."); else score++;
+        if (!hasSign) advice.push("Add a special character (e.g., !@#$)."); else score++;
+        if (password.length >= 12 && score >= 3) score++; // Bonus for length
+
+        let finalScore = Math.min(score, 5); // Cap general score at 5
+        let barClassName = `strength-${finalScore}`;
+
+        if (advice.length === 0) {
+            if (finalScore >= 4) advice.push("Strong password!");
+            else if (finalScore >= 2) advice.push("Good password!");
+            else advice.push("Consider more variety."); // Should only happen if rules met but score low? Edge case.
+        }
+
+        return { score: finalScore, advice: advice.slice(0, 2), barClassName }; // Max 2 advice items
+    }
+
+    function updatePasswordStrengthDisplay(password) {
+        const { score, advice, barClassName } = getPasswordStrengthInfo(password);
+        const barWidthPercent = Math.min(100, (score / 6) * 100); // Ensure max 100%
+
+        strengthBarEl.style.width = `${barWidthPercent}%`;
+        strengthBarEl.className = `strength-bar ${barClassName}`;
+        // Update live region for screen readers
+        strengthAdviceEl.innerHTML = advice.map(item => `<span>${item}</span>`).join("<br>");
+    }
+
+    function switchAuthMode(showBlock, hideBlock, title, tagline) {
+        dialogTitleEl.textContent = title;
+        dialogTaglineEl.textContent = tagline;
+
+        hideBlock.classList.remove('active');
+
+        // Reset forms and clear validation states
+        [loginFormEl, signupFormEl].forEach(form => {
+            form.reset(); // Resets input values
+            form.querySelectorAll('.input-control').forEach(input => {
+                // Clear visual validation classes
+                input.classList.remove('valid');
+                // Clear ARIA validation state
+                input.removeAttribute('aria-invalid');
+                // Clear associated error message text
+                const errorMsgId = input.getAttribute('aria-describedby');
+                if (errorMsgId) {
+                    const feedbackEl = document.getElementById(errorMsgId);
+                    if (feedbackEl && feedbackEl.classList.contains('field-feedback')) {
+                        feedbackEl.textContent = '';
+                         // No longer described by an error on reset
+                         // input.removeAttribute('aria-describedby'); // Keep describedby, CSS hides based on aria-invalid
+                    }
+                }
+                // Restore original placeholder if it was changed/cleared
+                 input.placeholder = input.dataset.originalPlaceholder || input.placeholder;
+            });
+        });
+
+        // Clear global messages
+        clearGlobalMessage(loginGlobalMsgEl);
+        clearGlobalMessage(signupGlobalMsgEl);
+        // Reset password strength display
+        if(signupPasswordEl) updatePasswordStrengthDisplay('');
+
+        // Animate in the new block
+        setTimeout(() => { showBlock.classList.add('active'); }, 50); // Short delay for transition effect
+    }
+
+    // --- Event Listeners Setup ---
+    switchToSignupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchAuthMode(signupBlock, loginBlock, 'Create your account', 'Join Gojo Rentals for exclusive access.');
+    });
+    switchToLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchAuthMode(loginBlock, signupBlock, 'Welcome back!', 'Log in to manage your stays.');
+    });
+
+    loginFormEl.addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearGlobalMessage(loginGlobalMsgEl);
+        if (!validateForm(this)) {
+            displayGlobalMessage(loginGlobalMsgEl, MSG.FIX_ERRORS, 'error');
+            // Optionally focus the first invalid field
+             this.querySelector('[aria-invalid="true"]')?.focus();
+            return;
+        }
+        console.log('DEMO: Login submitted', Object.fromEntries(new FormData(this)));
+        displayGlobalMessage(loginGlobalMsgEl, MSG.LOGIN_SUCCESS, 'success');
+        // TODO: Add actual fetch/AJAX call here
+    });
+
+    signupFormEl.addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearGlobalMessage(signupGlobalMsgEl);
+
+        // Re-validate password strength on submit attempt
+        if (signupPasswordEl) updatePasswordStrengthDisplay(signupPasswordEl.value);
+
+        if (!validateForm(this)) {
+            displayGlobalMessage(signupGlobalMsgEl, MSG.CHECK_ERRORS, 'error');
+             // Optionally focus the first invalid field
+             this.querySelector('[aria-invalid="true"]')?.focus();
+            return;
+        }
+        console.log('DEMO: Signup submitted', Object.fromEntries(new FormData(this)));
+        displayGlobalMessage(signupGlobalMsgEl, MSG.SIGNUP_SUCCESS, 'success');
+        // TODO: Add actual fetch/AJAX call here
+    });
+
+    // Real-time validation feedback on blur
+    document.querySelectorAll('.input-control').forEach(input => {
+        // Store original placeholder if needed (though CSS method doesn't clear it)
+        input.dataset.originalPlaceholder = input.placeholder;
+        input.addEventListener('blur', () => validateField(input));
+        // Clear error *visuals* on input, re-validate on blur
+        input.addEventListener('input', () => {
+            // Only clear if currently marked invalid by ARIA
+            if (input.getAttribute('aria-invalid') === 'true') {
+                 // Optimistically remove ARIA state, blur will re-validate fully
+                 input.removeAttribute('aria-invalid');
+                 input.classList.remove('valid'); // Remove valid class too if present
+                 // Clear the text content of the associated error message
+                 const errorMsgId = input.getAttribute('aria-describedby');
+                 const feedbackEl = errorMsgId ? document.getElementById(errorMsgId) : null;
+                 if (feedbackEl && feedbackEl.classList.contains('field-feedback')) {
+                    feedbackEl.textContent = '';
+                 }
+            }
+        });
+    });
+
+    // Password strength check on input
+    if (signupPasswordEl) {
+        signupPasswordEl.addEventListener('input', () => {
+             updatePasswordStrengthDisplay(signupPasswordEl.value);
+             // Also re-validate the password field itself for length/required on input
+             validateField(signupPasswordEl);
+             // If confirm password has a mismatch error, clear it as main pw changes
+             const confirmPwEl = document.getElementById('signup-confirm-password');
+             const confirmErrorEl = document.getElementById('signup-confirm-password-error');
+             if(confirmErrorEl && confirmErrorEl.textContent === MSG.PASSWORD_MISMATCH) {
+                setFieldValidity(confirmPwEl, true); // Mark valid for now, blur/submit will check match
+             }
+        });
+    }
+
+     // Confirm password validation on input
+     const confirmPasswordInput = document.getElementById('signup-confirm-password');
+     if (confirmPasswordInput) {
+         confirmPasswordInput.addEventListener('input', () => {
+             validateField(confirmPasswordInput);
+         });
+     }
+
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password-visibility').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetEl = document.getElementById(this.dataset.target);
+            if (!targetEl) return;
+            const isPassword = targetEl.type === 'password';
+            targetEl.type = isPassword ? 'text' : 'password';
+            this.textContent = isPassword ? 'Hide' : 'Show';
+            this.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        });
+    });
+
+    // Social login button handlers (Demo)
+    document.querySelectorAll('.social-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const provider = btn.textContent.trim().split('Continue with ')[1] || 'Social Provider';
+            console.log(`DEMO: ${provider} clicked.`);
+            const formBlock = btn.closest('.form-block');
+            const globalMsgEl = formBlock.id.includes('login') ? loginGlobalMsgEl : signupGlobalMsgEl;
+            clearGlobalMessage(loginGlobalMsgEl); // Clear both just in case
+            clearGlobalMessage(signupGlobalMsgEl);
+            displayGlobalMessage(globalMsgEl, MSG.SOCIAL_CONTINUE(provider), 'success');
+            // TODO: Implement actual social login flow
+        });
+    });
+
+    // --- Initial State ---
+    // Ensure the correct form is shown initially (Login)
+    switchAuthMode(loginBlock, signupBlock, 'Welcome to Gojo Rentals', 'Your key to premium stays.');
+
+    // Ensure floating labels work even if inputs start empty (using placeholder trick)
+    document.querySelectorAll('.input-control:not([placeholder]), .input-control[placeholder=""]').forEach(el => {
+        if (!el.placeholder || el.placeholder === "") {
+            el.placeholder = ' '; // Add a space placeholder if none exists
+            el.dataset.originalPlaceholder = ' '; // Store it
+        }
+    });
+});
+</script>
+</body>
+</html>

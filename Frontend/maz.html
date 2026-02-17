@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAZ Capital - Home</title>
+    <link rel="icon" type="image/png" href="images/android-chrome-512x512.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dropdown .dropdown-menu {
+            display: none;
+        }
+        .dropdown .dropdown-menu.active {
+            display: block;
+        }
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background-color: #ef4444;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .mobile-menu.active {
+            max-height: 500px;
+        }
+        .insights-carousel {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        .insights-carousel::-webkit-scrollbar {
+            display: none; /* Safari and Chrome */
+        }
+        .insight-card {
+            flex: 0 0 20rem; /* Do not grow, do not shrink, initial basis of 20rem */
+            margin-right: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-white">
+        <!-- Navbar -->
+<nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0 flex items-center">
+                <a href="index.php">
+                    <img src="images/maz_capital_logo.png" alt="MAZ Capital" class="h-10 w-auto">
+                </a>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex space-x-8">
+                <a href="home.php#home" class="nav-link text-gray-900 hover:text-red-500 px-3 py-2 text-sm font-medium">
+                    <i class="fas fa-home mr-2"></i>Home
+                </a>
+                <a href="about.php#about" class="nav-link text-gray-900 hover:text-red-500 px-3 py-2 text-sm font-medium">
+                    <i class="fas fa-users mr-2"></i>About Us
+                </a>
+
+                <!-- Services Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="nav-link text-gray-900 hover:text-red-500 px-3 py-2 text-sm font-medium flex items-center">
+                        <i class="fas fa-briefcase mr-2"></i>Services
+                        <i class="fas fa-chevron-down ml-1"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg">
+                        <a href="sell_side_advisory.php#sell-side" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-500">
+                            <i class="fas fa-chart-line mr-2"></i>Sell Side Advisory
+                        </a>
+                        <a href="buy_side_advisory.php#buy-side" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-500">
+                            <i class="fas fa-handshake mr-2"></i>Buy Side Advisory
+                        </a>
+                    </div>
+                </div>
+
+                <a href="insights.php" class="nav-link text-gray-900 hover:text-red-500 px-3 py-2 text-sm font-medium">
+                    <i class="fas fa-lightbulb mr-2"></i>Insights
+                </a>
+                <a href="contact.php#contact-section-detailed" class="nav-link text-gray-900 hover:text-red-500 px-3 py-2 text-sm font-medium">
+                    <i class="fas fa-envelope mr-2"></i>Contact Us
+                </a>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden" x-data="{ open: false }">
+                <button @click="open = !open" class="mobile-menu-btn text-gray-900 hover:text-red-500 p-2">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div x-show="open" @click.away="open = false" class="mobile-menu absolute top-16 inset-x-0 bg-white border-t border-gray-200">
+                    <div class="px-2 pt-2 pb-3 space-y-1">
+                        <a href="home.php#home" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-red-500 hover:bg-gray-50">
+                            <i class="fas fa-home mr-2"></i>Home
+                        </a>
+                        <a href="about.php#about" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-red-500 hover:bg-gray-50">
+                            <i class="fas fa-users mr-2"></i>About Us
+                        </a>
+                        <div class="px-3 py-2">
+                            <div class="text-base font-medium text-gray-900 mb-2">
+                                <i class="fas fa-briefcase mr-2"></i>Services
+                            </div>
+                            <div class="ml-4 space-y-1">
+                                <a href="sell_side_advisory.php#sell-side" class="block px-3 py-2 text-sm text-gray-700 hover:text-red-500 hover:bg-gray-50">
+                                    <i class="fas fa-chart-line mr-2"></i>Sell Side Advisory
+                                </a>
+                                <a href="buy_side_advisory.php#buy-side" class="block px-3 py-2 text-sm text-gray-700 hover:text-red-500 hover:bg-gray-50">
+                                    <i class="fas fa-handshake mr-2"></i>Buy Side Advisory
+                                </a>
+                            </div>
+                        </div>
+                        <a href="insights.php" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-red-500 hover:bg-gray-50">
+                            <i class="fas fa-lightbulb mr-2"></i>Insights
+                        </a>
+                        <a href="contact.php#contact-section-detailed" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-red-500 hover:bg-gray-50">
+                            <i class="fas fa-envelope mr-2"></i>Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+
+    <!-- Main Content Sections Start Here -->
+    <main id="home">
+<!-- Hero Section (Beautiful) -->
+<section class="relative min-h-[80vh] md:min-h-screen flex items-center overflow-hidden">
+  <!-- Background image -->
+  <div class="absolute inset-0 bg-cover bg-center scale-105"
+       style="background-image:url('images/financial_district_background.webp');"></div>
+
+  <!-- Mesh gradient overlay -->
+  <div class="absolute inset-0"
+       style="background: radial-gradient(1200px 600px at 15% 20%, rgba(220,38,38,.55), transparent 60%),
+                      radial-gradient(900px 500px at 85% 70%, rgba(0,0,0,.75), transparent 60%),
+                      linear-gradient(135deg, rgba(0,0,0,.70), rgba(0,0,0,.35));">
+  </div>
+
+  <!-- Soft animated blobs -->
+  <div class="absolute w-[380px] h-[380px] rounded-full blob"
+       style="top:10%; left:-6%; background:rgba(220,38,38,.55);"></div>
+  <div class="absolute w-[320px] h-[320px] rounded-full blob blob--2"
+       style="bottom:8%; right:-4%; background:rgba(239,68,68,.45);"></div>
+
+  <!-- Subtle grid + film grain -->
+  <div class="hero-grid"></div>
+  <div class="hero-noise"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 w-full">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <!-- Eyebrow -->
+      <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur px-3 py-1.5 rounded-full mb-6">
+        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+        <span class="text-sm text-white/90">Strategic Transaction Advisors</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="shine text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-white">
+        Bringing Cross-Border <span class="text-red-500">Opportunities</span><br class="hidden md:block">
+        to Ethiopia
+      </h1>
+
+      <!-- Subcopy -->
+      <p class="mt-6 text-lg md:text-xl text-white/80 max-w-3xl">
+        Informed and insightful partners for acquisitions, divestitures, and capital raising—tailored to Ethiopia’s evolving market.
+      </p>
+
+      <!-- CTAs -->
+      <div class="mt-8 flex flex-col sm:flex-row gap-4">
+        <a href="contact.php"
+           class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-red-600 hover:bg-red-700 transition">
+          <i class="fas fa-envelope mr-3"></i> Get in touch
+        </a>
+        <a href="#what-we-do"
+           class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur transition">
+          <i class="fas fa-briefcase mr-3"></i> Explore services
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-2xl">
+        <div class="bg-white/10 border border-white/20 backdrop-blur rounded-xl p-4">
+          <div class="text-2xl font-bold text-white">30+ yrs</div>
+          <div class="text-white/70 text-sm">Operating experience</div>
+        </div>
+        <div class="bg-white/10 border border-white/20 backdrop-blur rounded-xl p-4">
+          <div class="text-2xl font-bold text-white">2024</div>
+          <div class="text-white/70 text-sm">Founded</div>
+        </div>
+        <div class="bg-white/10 border border-white/20 backdrop-blur rounded-xl p-4">
+          <div class="text-2xl font-bold text-white">Ethiopia</div>
+          <div class="text-white/70 text-sm">Primary focus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <a href="#contact-section" class="group absolute left-1/2 -translate-x-1/2 bottom-6 md:bottom-10 text-white/70 hover:text-white">
+      <div class="w-5 h-8 rounded-full border border-white/40 mx-auto flex items-start justify-center p-1">
+        <span class="w-1 h-1 rounded-full bg-white/80 scroll-dot"></span>
+      </div>
+      <span class="block mt-2 text-xs tracking-widest">SCROLL</span>
+    </a>
+  </div>
+
+  <!-- Decorative bottom divider -->
+  <svg class="absolute bottom-0 left-0 w-full h-16 text-white" viewBox="0 0 1440 80" preserveAspectRatio="none" fill="currentColor">
+    <path d="M0,64L48,58.7C96,53,192,43,288,42.7C384,43,480,53,576,58.7C672,64,768,64,864,58.7C960,53,1056,43,1152,37.3C1248,32,1344,32,1392,32L1440,32L1440,80L1392,80C1344,80,1248,80,1152,80C1056,80,960,80,864,80C768,80,672,80,576,80C480,80,384,80,288,80C192,80,96,80,48,80L0,80Z"></path>
+  </svg>
+</section>
+
+        <!-- Services Section -->
+        <section class="py-16 md:py-20 bg-gray-50" id="services">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 md:mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Our Core Advisory Services</h2>
+                    <div class="w-24 h-1 bg-red-600 mx-auto rounded-full mb-4"></div>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        We provide specialized advisory for both selling and acquiring businesses, ensuring optimal outcomes for our clients in the Ethiopian market.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+                    <!-- Sell Side Advisory Card -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1">
+                        <div class="flex items-center mb-5">
+                            <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center mr-5">
+                                <i class="fas fa-chart-line text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-semibold text-gray-900">Sell-Side Advisory</h3>
+                        </div>
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            Guiding business owners through the complexities of selling their companies. We focus on maximizing value, from pre-deal readiness and valuation to identifying global investors and closing the transaction.
+                        </p>
+                        <a href="sell_side_advisory.php#sell-side" class="inline-flex items-center text-red-600 font-semibold hover:text-red-700 transition-colors">
+                            Explore Sell-Side Services <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+
+                    <!-- Buy Side Advisory Card -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl transform hover:-translate-y-1">
+                        <div class="flex items-center mb-5">
+                            <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center mr-5">
+                                <i class="fas fa-handshake text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-semibold text-gray-900">Buy-Side Advisory</h3>
+                        </div>
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            Assisting strategic acquirers, private equity firms, and institutional investors in identifying and executing high-impact opportunities within Ethiopia. We offer proprietary deal sourcing and holistic due diligence support.
+                        </p>
+                        <a href="buy_side_advisory.php#buy-side" class="inline-flex items-center text-red-600 font-semibold hover:text-red-700 transition-colors">
+                            Discover Buy-Side Solutions <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Services Section -->
+
+        <!-- About Us Snippet Section -->
+        <section class="py-16 md:py-20 bg-white" id="home-about">
+            <div class="container mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="relative order-2 lg:order-1">
+                        <img src="images/sell_side_advisory_background.webp"
+                             alt="MAZ Capital Team or Office"
+                             class="w-96 h-96 object-cover rounded-xl shadow-xl mx-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent rounded-xl"></div>
+                    </div>
+                    <div class="space-y-6 order-1 lg:order-2">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                            About <span class="text-red-600">MAZ Capital</span>
+                        </h2>
+                        <div class="w-24 h-1 bg-red-600 rounded-full mb-4"></div>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            MAZ Capital, founded by Mazengia Demma, leverages nearly 30 years of entrepreneurial leadership to bring cross-border M&A opportunities to Ethiopia's dynamic market. We are strategic transaction advisors dedicated to executing lucrative deals for our clients.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Our unique industry background, combined with a deep understanding of Ethiopian business realities, allows us to provide unparalleled advisory services. We aim to accelerate the liberalization of the Ethiopian economy and help our clients achieve long-term success.
+                        </p>
+                        <div class="pt-4">
+                            <a href="about.php#about" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-flex items-center">
+                                <i class="fas fa-users mr-2"></i> Discover Our Story
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End About Us Snippet Section -->
+
+        <!-- Insights Section -->
+        <section class="py-16 md:py-20 bg-gray-50" id="insights">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12 md:mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Our Latest Insights</h2>
+                    <div class="w-24 h-1 bg-red-600 mx-auto rounded-full mb-4"></div>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Stay informed with our latest articles and analysis on the Ethiopian market.
+                    </p>
+                </div>
+
+                <div class="insights-carousel">
+                    <div class="insight-card bg-white shadow-xl rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl"><a href="single_insight.php?article=investment_readiness_guide" class="block"><img src="/images/insights/investment_readiness_guide.webp" alt="Investment Readiness Guide" class="w-full h-48 object-cover rounded-t-md" loading="lazy"></a><div class="p-6 flex-grow"><h2 class="text-xl font-semibold text-red-500 mb-2"><a href="single_insight.php?article=investment_readiness_guide" class="hover:underline">Investment Readiness Guide</a></h2><p class="text-sm text-gray-500 mb-3">Published on: January 15, 2024</p><p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">welcoming external strategic or financial investors is as much about **partnership** as it is about **capital**</p></div><div class="p-6 pt-0 mt-auto"><a href="single_insight.php?article=investment_readiness_guide" class="inline-block bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition-colors text-sm font-medium">Read More &rarr;</a></div></div></div>                </div>
+            </div>
+        </section>
+        <!-- End Insights Section -->
+    </main>
+    <!-- Main Content Sections End Here -->
+
+    <!-- Contact Us Section -->
+    <section class="py-20 bg-gray-800" id="contact-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white mb-4">
+                    <i class="fas fa-phone text-red-500 mr-3"></i>
+                    Contact Us
+                </h2>
+                <p class="text-xl text-gray-300">Get in touch with us today</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                <div class="bg-gray-700 rounded-xl p-8">
+                    <div class="text-4xl mb-4 text-red-500">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Phone</h3>
+                    <p class="text-gray-300 mb-4">
+                        <a href="tel:+251989989997" class="hover:text-white flex items-center justify-center">
+                            <i class="fas fa-mobile-alt mr-2 text-red-500"></i>
+                            +251-989-989-997
+                        </a>
+                    </p>
+                    <hr class="border-gray-600 mb-4" />
+                    <div class="text-4xl mb-2 text-red-500">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Email</h3>
+                    <p class="text-gray-300">
+                        <a href="mailto:info@maz-cap.com" class="hover:text-white flex items-center justify-center">
+                            <i class="fas fa-at mr-2 text-red-500"></i>
+                            info@maz-cap.com
+                        </a>
+                    </p>
+                </div>
+
+                <div class="bg-gray-700 rounded-xl p-8">
+                    <div class="text-4xl mb-4 text-red-500">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Address</h3>
+                    <p class="text-gray-300 mb-4 flex items-center justify-center">
+                        <i class="fas fa-building mr-2 text-red-500"></i>
+                        Akaki Kality, Wereda 02, Addis Ababa, Ethiopia
+                    </p>
+                    <div class="google-map">
+                        <iframe
+                            frameborder="0"
+                            style="border:0; width:100%; height:200px; border-radius: 8px;"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4128.708172429009!2d38.80131343213957!3d8.855097198480324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b850159921f31%3A0xd4dabffc3499c3bc!2sMAZ%20Capital%20PLC!5e0!3m2!1sen!2set!4v1723732252236!5m2!1sen!2set"
+                            allowfullscreen="">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+<footer class="bg-black text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Logo and Description -->
+            <div class="md:col-span-2">
+                <div class="flex items-center mb-4">
+                    <img src="images/maz_capital_logo.png" alt="MAZ Capital" class="h-10 w-auto mr-3">
+                    <h3 class="text-xl font-bold">MAZ Capital</h3>
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Professional investment advisory services providing comprehensive sell-side and buy-side solutions for your investment needs. Strategic transaction advisory for merger and acquisition, joint ventures and more.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="https://www.linkedin.com/company/mazcapital/" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <img src="images/linkedin-in-icon.png" alt="LinkedIn" class="h-5 w-5">
+                    </a>
+                    <a href="https://x.com/MAZCAPITAL_?t=w4UhzugwBE-Af-aNFmM3xQ&s=09" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <img src="images/X_logo.png" alt="X" class="h-5 w-5">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-red-500">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="home.php#home" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>Home</a></li>
+                    <li><a href="about.php#about" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>About Us</a></li>
+                    <li><a href="insights.php" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>Insights</a></li>
+                    <li><a href="contact.php#contact-section-detailed" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>Contact Us</a></li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-red-500">Services</h4>
+                <ul class="space-y-2">
+                    <li><a href="sell_side_advisory.php#sell-side" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>Sell Side Advisory</a></li>
+                    <li><a href="buy_side_advisory.php#buy-side" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-chevron-right mr-2"></i>Buy Side Advisory</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="border-gray-700 my-8">
+
+        <div class="text-center">
+            <p class="text-gray-400">
+                <i class="fas fa-copyright mr-2 text-red-500"></i>
+                Copyright 2025 MAZ Capital - All Rights Reserved
+            </p>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"], a[href*=".php#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const hrefAttribute = this.getAttribute('href');
+                const isSamePageLink = hrefAttribute.startsWith('#');
+
+                const currentPath = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+                const linkPath = hrefAttribute.split('#')[0];
+                const isLinkToAnotherPageSection = hrefAttribute.includes('.php#');
+                // Ensure currentPath is not empty, default to home.php if it is (for root access)
+                const effectiveCurrentPath = currentPath === '' ? 'home.php' : currentPath;
+                const isLinkToCurrentPageSection = isLinkToAnotherPageSection && (linkPath === effectiveCurrentPath || (linkPath === '' && effectiveCurrentPath === 'home.php'));
+
+
+                if (isSamePageLink || isLinkToCurrentPageSection) {
+                    e.preventDefault();
+                    const targetId = '#' + hrefAttribute.split('#')[1];
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        const navbarHeight = document.querySelector('nav')?.offsetHeight || 0;
+                        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - navbarHeight;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Adjust scroll for navbar height if navigating from another page or on direct hash link load
+        window.addEventListener('load', function() {
+            if (window.location.hash) {
+                const targetElement = document.querySelector(window.location.hash);
+                if (targetElement) {
+                    setTimeout(() => {
+                        const navbarHeight = document.querySelector('nav')?.offsetHeight || 0;
+                        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - navbarHeight;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'auto'
+                        });
+                    }, 100);
+                }
+            }
+        });
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>
